@@ -115,7 +115,7 @@ x :: Int
 -- 运算符 : 的声明。同样，a 是一个范型，注意前后的 a 需要保持一致
 (:) :: a -> [a] -> [a]
 -- 举例
-list_result = 0 : list_a        -- list_result = [0, 1, 2]
+list_result = 0 : list_a         -- list_result = [0, 1, 2]
 ```
 
 通过 `++` 运算符合并两个列表生成新的列表，第一个列表的表尾接第二个列表的表头：
@@ -135,8 +135,8 @@ list_result = list_a ++ list_b    -- list_result = [1, 2 ,3]
 length :: Foldable a => a -> Int
 null :: Foldable a => a -> Bool
 -- 举例
-l = length list            -- l = 3
-empty = null list        -- empty = false
+l = length list         -- l = 3
+empty = null list       -- empty = false
 ```
 
 用 `!!` 运算符访问任意位置的元素：
@@ -145,7 +145,7 @@ empty = null list        -- empty = false
 -- 运算符 !! 的声明
 (!!) :: [a] -> Int -> a
 -- 距离
-a = list!!1            -- a = 2
+a = list!!1             -- a = 2
 ```
 
 此外，`head`、`tail`、`last`、`init` 等函数可以得到列表的特定元素或子列表：
@@ -156,10 +156,10 @@ tail :: [a] -> [a]
 last :: [a] -> a
 init :: [a] -> [a]
 -- 举例
-x = head list            -- a = 1
-list_result = tail list    -- list_result = [2, 3]
-x = last list            -- a = 3
-list_result = init list    -- list_result = [1, 2]
+x = head list               -- a = 1
+list_result = tail list     -- list_result = [2, 3]
+x = last list               -- a = 3
+list_result = init list     -- list_result = [1, 2]
 ```
 
 最后，`take` 和 `drop` 也是常用的提取子列表的函数：
@@ -168,8 +168,8 @@ list_result = init list    -- list_result = [1, 2]
 take :: Int -> [a] -> [a]
 drop :: Int -> [a] -> [a]
 -- 举例
-front = take 2 list        -- front = [1, 2]
-back = drop 2 list        -- back = [2, 3]
+front = take 2 list         -- front = [1, 2]
+back = drop 2 list          -- back = [2, 3]
 ```
 
 ### 范围与无限列表
@@ -183,10 +183,10 @@ range1 = [1..5]            -- range1 = [1, 2, 3, 4, 5]
 -- [first, second...last] 将构建列表 [first, first+step, first+2*step, ... first+k*step]
 -- 其中 step = second-first，且 k 是最后一个使得 first+k*step <= last 成立的数
 range2 :: [Int]
-range2 = [1, 3..9]        -- range2 = [1, 3, 5, 7, 9]
+range2 = [1, 3..9]         -- range2 = [1, 3, 5, 7, 9]
 -- step < 0 的情况依然适用，只不过 k 是最后一个使得 first+k*step >= last 成立的数
 range3 :: [Int]
-range3 = [9, 7..1]        -- range3 = [9, 7, 5, 3, 1]
+range3 = [9, 7..1]         -- range3 = [9, 7, 5, 3, 1]
 ```
 
 不难发现，范围这种结构默认次个元素为首个元素后继（即加一），因此如果需要构建公差为 `-1` 的列表，我们依然需要显式给出第二个元素。除了整数之外，浮点数也支持范围。只不过局限于浮点数的精度，可能会出现存储的数据不精确，甚至存入多余数据的情况：
@@ -202,7 +202,7 @@ rangef = [0.1, 0.3..1.0]    -- rangef = [0.1,0.3,0.5,0.7,0.8999999999999999,1.09
 
 ```haskell
 natural :: [Int]
-natural = [1..]                -- natural = [1, 2, 3, ...] 是无限长的列表，在解释器中会不断地打印出数来
+natural = [1..]             -- natural = [1, 2, 3, ...] 是无限长的列表，在解释器中会不断地打印出数来
 odds :: [Int]
 odds = [1, 3...]            -- odds = [1, 3, 5, 7, ...] 也是一个无限长的列表
 range1 :: [Int]
@@ -223,8 +223,8 @@ repeat :: a -> [a]
 -- 举例
 list_a :: [Int]
 list_b :: [Int]
-list_a = cycle [1, 2, 3]    -- list_a = [1, 2, 3, 1, 2, 3, ...]
-list_b = repeat 42            -- list_b = [42, 42, 42, ...]
+list_a = cycle [1, 2, 3]        -- list_a = [1, 2, 3, 1, 2, 3, ...]
+list_b = repeat 42              -- list_b = [42, 42, 42, ...]
 ```
 
 ### 列表概括
@@ -259,7 +259,7 @@ unwords :: [String] -> String
 
 -- 距离
 list :: [String]
-list = words "This is a sentence"        -- list = ["This", "is", "a", "sentence"]
+list = words "This is a sentence"          -- list = ["This", "is", "a", "sentence"]
 sentence :: String
 sentence = unwords list                    -- sentence = "This is a sentence"
 ```
@@ -276,7 +276,7 @@ snd :: (a, b) -> b
 points :: [(Float, Float)]
 points = [(1.0, 2.0), (-3.5, 0.5), (2.5, -1.0)]
 pt :: (Float, Float)
-pt = head points        -- pt = (1.0, 2.0)
+pt = head points         -- pt = (1.0, 2.0)
 pt_x :: Float
 pt_x = fst pt            -- pt_x = 1.0
 pt_y :: Float
@@ -430,7 +430,7 @@ n_mod_two = (`mod` 2)
 twice :: (a -> a) -> a -> a
 twice f = f . f
 x :: Int
-x = twice (* 2) 2        -- x = 8
+x = twice (* 2) 2               -- x = 8
 str :: String
 str = twice ("Yo " ++) "Yee"    -- str = "Yo Yo Yee"
 ```
@@ -512,8 +512,8 @@ flip' f x y = f y x
 -- (.) 可能的实现
 f . g = \x -> f (g x)
 -- 举例
-to_string :: Int -> String            -- 定义略
-first_character :: String -> Char    -- 定义略
+to_string :: Int -> String          -- 定义略
+first_character :: String -> Char   -- 定义略
 first_digit :: Int -> Char
 first_digit = first_character . to_string
 ```
@@ -572,13 +572,13 @@ num = show $ add 1 2        -- num = "3" 这里和 num = show (add 1 2) 等价
 (-) :: Num a => a -> a -> a
 (*) :: Num a => a -> a -> a
 (/) :: Fractional a => a -> a -> a
-mod :: Integral a => a -> a -> a                    -- 求余
+mod :: Integral a => a -> a -> a                     -- 求余
 (^) :: (Integral a, Num b) => a -> b -> a            -- 整数的幂
 (^^) :: (Fractional a, Integral b) => a -> b -> a    -- 有理数的整数幂
 (**) :: Floating a => a -> a -> a                    -- 浮点数的幂
 negate :: Num a => a -> a                            -- 取负数
-sqrt :: Floating a => a -> a                        -- 平方根
-abs :: Num a => a -> a                                -- 绝对值
+sqrt :: Floating a => a -> a                         -- 平方根
+abs :: Num a => a -> a                               -- 绝对值
 signum :: Num a => a -> a                            -- 正负性
 ```
 
@@ -606,7 +606,7 @@ not :: Bool -> Bool
 -- 下面的运算符 `.&.` 定义在 Data.Bits 中，需要用 import 语句
 Data.Bits.(.&.) :: Bits => a -> a -> a        -- 按位与
 Data.Bits.(.|.) :: Bits => a -> a -> a        -- 按位或
-Data.Bits.xor :: Bits => a -> a -> a        -- 按位异或
+Data.Bits.xor :: Bits => a -> a -> a          -- 按位异或
 Data.Bits.complement :: Bits => a -> a        -- 按位补
 ```
 
@@ -645,8 +645,8 @@ mylist = let (x:xs) = [1, 2, 3] in xs ++ [x] ++ xs    -- mylist = [2, 3, 1, 2, 3
 
 ```haskell
 mynumber :: Int
-mynumber = x + y*z        -- mynumber = 14
-    where x = y + z        -- 再次出现了未经定义的名称，where 子句会继续向下找
+mynumber = x + y*z          -- mynumber = 14
+    where x = y + z         -- 再次出现了未经定义的名称，where 子句会继续向下找
           y = z ^ 2
           z = 2
 ```
@@ -673,7 +673,7 @@ myadd x y = myadd' x y 0
 list :: [Float]
 list = map sqrt [1.0, 2.0, 3.0]        -- Haskell 中，我们是通过右边的表达式定义了变量，但是右侧表达式并未进行求值
 first :: Float
-first = head list            -- 这里实际上依然没有进行求值，但是先假设有一个让它进行求值的函数 eval
+first = head list             -- 这里实际上依然没有进行求值，但是先假设有一个让它进行求值的函数 eval
 eval :: a -> a                -- 这个函数并不存在，我们仅作为演示
 first_val :: Float
 first_val = eval first
@@ -689,16 +689,16 @@ first_val = eval first
 
 ```haskell
 multiple_of_7 :: [Int]
-multiple_of_7 = [0, 7..]    -- 我们并不知道需要的数可能有多大，因此无限列表是最好的选择
+multiple_of_7 = [0, 7..]        -- 我们并不知道需要的数可能有多大，因此无限列表是最好的选择
 list :: [Int]
 list = take 10 $ filter (\x -> x `mod` 11 == 5) multiple_of_7
 result_list :: [Int]
-result_list = eval list        -- result_list = [49,126,203,280,357,434,511,588,665,742]
+result_list = eval list         -- result_list = [49,126,203,280,357,434,511,588,665,742]
 --1 eval result_list = eval (take 10 $ filter (\x -> x `mod` 11 == 5) multiple_of_7)
 --2                     = eval (take 10 $ (49 : filter (\x -> x `mod` 11 == 5) [56, 63, ...]))
 --3                     = eval (49 : take 9 $ filter (\x -> x `mod 11 == 5) [56, 63, ...])
--- ...                 ...
---k                  = [0, 7, 14, ..., 98]
+-- ...                  ...
+--k                     = [0, 7, 14, ..., 98]
 ```
 
 此处的无限列表显然是没有办法完全求值的，因此惰性求值恰到好处地完成了任务。如果使用勤奋求值，就不得不为输入的列表预定一个上限，这样的实现显然不够优雅……
@@ -1096,9 +1096,9 @@ Bool = False | True deriving (Ord)
 Maybe a = Nothing | Just a deriving (Ord)
 -- 举例：
 b1 :: Bool
-b1 = False < True        -- b1 = True
+b1 = False < True          -- b1 = True
 b2 :: Bool
-b2 = Nothing < Just 10    -- b2 = True
+b2 = Nothing < Just 10     -- b2 = True
 b3 :: Bool
 b3 = Just 10 > Just 20     -- b3 = False
 ```
@@ -1174,10 +1174,10 @@ instance (Eq m) => Eq (Maybe m) where
 ```haskell
 -- Monoid 可能的定义
 class Monoid m where
-    mempty :: m                -- 单位元
-    mappend :: m -> m -> m    -- 幺半群上的二元运算
-    mconcat :: [m] -> m        -- 将列表中的元素通过二元运算折叠为一个值
-    mconcat = foldr mappend mempty    -- 默认的拼接定义
+    mempty :: m                     -- 单位元
+    mappend :: m -> m -> m          -- 幺半群上的二元运算
+    mconcat :: [m] -> m             -- 将列表中的元素通过二元运算折叠为一个值
+    mconcat = foldr mappend mempty  -- 默认的拼接定义
 -- 列表类型 [] 实现了 Monoid
 instance Monoid [a] where
     mempty = []
@@ -1269,9 +1269,9 @@ instance Monoid m => Monoid (Maybe m) where
 -- Functor 可能的定义
 -- fmap 接收一个一元函数和一个函子构造的类型，生成一个函子构造的新类型
 class Functor f where
-    fmap :: (a -> b) -> f a -> f b        -- 从这里 f a 是完整类型可以推测 f 是一个类型构造器
+    fmap :: (a -> b) -> f a -> f b  -- 从这里 f a 是完整类型可以推测 f 是一个类型构造器
 -- 列表类型 [] 实现了 Functor
-instance Functor [] where        -- 现在能够发现，实际上 [a] 是 [] a 的语法糖
+instance Functor [] where           -- 现在能够发现，实际上 [a] 是 [] a 的语法糖
     fmap = map
 -- Maybe 实现了 Functor
 instance Functor Maybe where
@@ -1307,12 +1307,12 @@ instance Functor IO where
 -- 因此没错，(->) 是一个 * -> * -> * 类型的类型构造器，只是一般以中缀形式写出。可以理解为 data (->) a b = a -> b
 -- 可以横向对比二元运算符的部分调用， ((+) m) n 等价于 m + n，因此 ((->) r) a 等价于 r -> a
 instance Functor ((->) r) where
-    fmap f g = \x -> f $ g x    -- fmap :: (a -> b) -> (r -> a) -> (r -> b)
+    fmap f g = \x -> f $ g x            -- fmap :: (a -> b) -> (r -> a) -> (r -> b)
     
 -- 举例
 putStrReverse :: IO ()
 putStrReverse = do
-    str <- fmap reverse getLine        -- fmap reverse getLine :: IO String
+    str <- fmap reverse getLine         -- fmap reverse getLine :: IO String
     putStr "The string is reversed:" ++ str
 seqOp :: Int -> Int
 seqOp = fmap (+ 2) (* 3)        -- 等价于 (+ 2) . (* 3)，先进行 *3 再进行 +2
@@ -1341,7 +1341,7 @@ class Functor f => Applicative f where
     (<*>) :: f (a -> b) -> f a -> f b
 -- [] 实现了 Applicative
 instance Applicative [] where
-    pure x = [x]                -- pure :: a -> [a]
+    pure x = [x]                   -- pure :: a -> [a]
     ff <*> xx = [f x | f <- ff, x <- xx]
 -- Maybe 实现了 Applicative
 instance Applicative Maybe where
@@ -1350,15 +1350,15 @@ instance Applicative Maybe where
     Just f <*> x = fmap f x
 -- IO 实现了 Applicative
 instance Applicative IO where
-    pure = return                -- pure :: a -> IO a
+    pure = return                  -- pure :: a -> IO a
     mf <*> mx = do
         f <- mf
         x <- mx
         return $ m x
 -- (->) 实现了 Applicative
 instance Applicative (->) where
-    pure x = \_ -> x            -- pure :: a -> (r -> a)
-    f <*> g = \x -> f x (g x)    -- (<*>) :: (r -> a -> b) -> (r -> a) -> (r -> b)
+    pure x = \_ -> x               -- pure :: a -> (r -> a)
+    f <*> g = \x -> f x (g x)      -- (<*>) :: (r -> a -> b) -> (r -> a) -> (r -> b)
 ```
 
 下面让我们来逐个看看他们的用法。首先是 `Maybe`：
@@ -1395,7 +1395,7 @@ ghci> Just 105
 现在再让我们看看 `Maybe` 应用函子的运用：
 
 ```haskell
-ghci> (++) <$> Just "Hello, " <*> Just "world!"        -- 对比 (++) "Hello, " "world!"
+ghci> (++) <$> Just "Hello, " <*> Just "world!"     -- 对比 (++) "Hello, " "world!"
 Just "Hello, world!"
 ghci> fmap <$> Just (+ 3) <*> Just [0, 1, 2]        -- 对比 fmap (+ 3) [0, 1, 2]
 Just [3, 4, 5]
@@ -1459,11 +1459,11 @@ sequenceA :: Applicative f => [f a] -> f [a]
 sequenceA = foldr (liftA2 (:)) (pure [])    -- 回忆折叠函数 foldr 将列表从右到左进行累积计算
 
 list1 :: Maybe [Int]
-list1 = sequenceA [Just 10, Just 42]    -- list1 = Just [10, 42]
+list1 = sequenceA [Just 10, Just 42]        -- list1 = Just [10, 42]
 list2 :: Maybe [Int]
-list2 = sequenceA [Just 10, Nothing]    -- list2 = Nothing
+list2 = sequenceA [Just 10, Nothing]        -- list2 = Nothing
 list3 :: [Int]
-list3 = sequenceA [(+ 1), (* 2)] 3        -- list3 = [4, 6]
+list3 = sequenceA [(+ 1), (* 2)] 3          -- list3 = [4, 6]
 ```
 
 最后，让我们给出应用函子定律：
@@ -1567,7 +1567,7 @@ monad = Just 3 >>= (\x ->
 ```haskell
 monad :: Maybe String
 monad = do
-    x <- Just 3            -- <- 符号将一个单子类型 M a 中的 a 类型值绑定于左侧的变量上
+    x <- Just 3              -- <- 符号将一个单子类型 M a 中的 a 类型值绑定于左侧的变量上
     y <- Just "abc"
     return show x ++ y
 ```
@@ -1580,9 +1580,9 @@ firstChar str = do
     (x:xs) <- Just str
     return x
 char1 :: Maybe Char
-char1 = firstChar "abc"    -- char1 = Just 'a'
+char1 = firstChar "abc"     -- char1 = Just 'a'
 char2 :: Maybe Char
-char2 = firstChar ""       -- char2 = Nothing
+char2 = firstChar ""        -- char2 = Nothing
 ```
 
 看了这么多的 `Maybe` 单子示例，让我们再看看别的单子。首先是 `[]` 单子：
@@ -1840,10 +1840,10 @@ concat xxx = [x | xx <- xxx, x <- xx]
 
 ```haskell
 [|] :: [a]
-[e | True] = [e]        -- 右侧没有限制则直接输出内容
-[e | q] = [e | q, True]    -- 如果只有一个判断条件，直接归纳到后一种情况
-[e | b, Q] = if b then [e | Q] else []    -- 如果有一个判断条件 b 和后续序列 Q ，则根据 b 决定是否进行后续序列
-[e | x <- xx, Q] = let ok x = [e | Q]    -- 对每一个元素判断是否满足
+[e | True] = [e]            -- 右侧没有限制则直接输出内容
+[e | q] = [e | q, True]     -- 如果只有一个判断条件，直接归纳到后一种情况
+[e | b, Q] = if b then [e | Q] else []      -- 如果有一个判断条件 b 和后续序列 Q ，则根据 b 决定是否进行后续序列
+[e | x <- xx, Q] = let ok x = [e | Q]       -- 对每一个元素判断是否满足
                        ok _ = []
                    in concat (map ok xx)    -- 将所有满足的列表拼接到一起
 ```

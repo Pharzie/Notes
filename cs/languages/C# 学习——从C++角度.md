@@ -129,13 +129,13 @@ int main() {
 }
 ```
 
-
-
 ## 方法
 
 这一部分和 **C++** 风格有些差异，需要提到的首先有两点：其一，**C#** 不支持变量隐藏，也就是在块结构内的变量不能和外面的变量拥有相同的名字；此外，在 **C# 7.0** 往后，可以在函数中定义函数，即局部函数（语法上更加丰富包容了，我其实一直不理解为啥 **C++** 不能允许局部函数）。
 
 此外，**C#** 有千奇百怪的参数传递方式，这几乎让我改变对 **C#** 还算不错的第一印象：
+
+### 参数传递
 
 和 **C++** 一样，函数默认传递的都是值，即所谓 **值参数（Value Parameter）**，被传入的内容无论在函数中如何修改，是无法改变函数调用处的这个值的。但是因为存在引用类型这种东西，因此虽然引用本身没法改变，却可以改变引用的对象的值：
 
@@ -215,8 +215,6 @@ int main() {
 }
 ```
 
-
-
 接下来开始出现奇怪的参数类型了，首先是 **输出参数**。输出参数和引用参数基本一致，但是有几个额外检查：
 
 - 需要是已经声明的变量
@@ -234,10 +232,312 @@ class MyClass {
 }
 class MyProgram {
  	void PassInOut(out int sum, in int x, in int y) {
-     	sum = x + y   
+     	sum = x + y; 
+    }
+    void PassInOut2(out MyClass mc) {
+		mc.val = 10;
+    }
+    static void Main() {
+        int result;
+        PassInOut(out result, 10, 42);
+        Console.WriteLine($"result = {result}");	// 输出 "result = 52"
+        PassInOut(out MyClass mc);					// (C# 7.0) 可以直接在调用处声明变量
+        Console.WriteLine($"mc.val = {mc.val}");	// 输出 "mc.val = 10"
     }
 }
 ```
 
+在微软的官网上这样总结 `ref`、`out`、`in` 三种参数传递：
 
+| **参数类型**      | 在函数中的行为            | 传递方式                                                |
+| ----------------- | ------------------------- | ------------------------------------------------------- |
+| 引用参数（`ref`） | *可能* 在函数中修改它的值 | 在传递处使用 `ref` 关键字                               |
+| 输出参数（`out`） | *必须* 在函数中修改它的值 | 在传递处使用 `out` 关键字，也可以直接在调用处声明该变量 |
+| 输入参数（`in`）  | *不能* 在函数中修改它的值 | 传递处和值参数无异                                      |
 
+从某种角度上，**C#** 这样的设计用一种强制的方式抽象出函数输入和多个函数输出的模式。如果从 **C++** 角度来看，`in` 参数就是常引用 `const &`，能够达到一模一样的效果（考虑到 **C#** 的自动解引用，实际上也可以是 `const *`。`out` 参数在 **C++** 中则不存在等价对应。**C++** 除了拥有 `const` 之外，实际上缺乏对变量赋值（初始化）的强制。
+
+最后让我们介绍 **参数数组**，它可以接受多个相同类型的参数，但有下列限制：
+
+- 参数列表中至多只能有一个参数数组
+- 参数数组必须是最后一个参数
+
+为参数数组类型的参数传递参数时，可以是一个数组，或者是任意数量的参数。需要注意的是，因为可以传入数组，而数组是一个引用类型，所以 `null` 也可以被传入。
+
+```csharp
+class MyProgram {
+ 	int SumInt(params int[] vals) {
+        int sum = 0;
+     	if (vals != null && vals.length != 0) {
+			for (int i = 0; i < vals.length; ++i) {
+            	sum += vals[i];
+            }
+        }
+        return sum;
+    }
+    static void Main() {
+        int sum1 = SumInt(1, 2, 3, 4, 5);	// sum1 = 15
+        int[] arr = { 1, 2, 3, 4, 5 };
+        int sum2 = SumInt(arr);				// sum2 = 15
+        int sum3 = SumInt();				// sum3 = 0
+        int sum4 = SumInt(null);			// sum4 = 0
+    }
+}
+```
+
+比起直接传递数组，参数数组语法上更加简洁，在需要不定个数的同类型参数时比较好用。**C++** 中可以使用（过时的）可变参数函数，不过这个局限太大了（首先就是根本不知道有多少参数）。也可以使用初始化列表类型（**C++11**)，但是在调用处需要显示写出大括号，有时可能还要给出里面元素的类型。最通用的是使用模版参数包（**C++11**），不过它对类型的控制不是很严格，可能需要 `constexpr-if`（**C++17**）：
+
+```cpp
+int sum_int() {
+    return 0;
+}
+template<typename First, typename... Rest>
+int sum_int(First first, Rest... rest) {
+    if constexpr (std::is_same_v<First, int>) {
+        return first + sum_int(rest...);
+    }
+    return 0;
+}
+int main() {
+    int sum1 = sum_int(1, 2, 3);		// sum1 = 6
+    int sum2 = sum_int();				// sum2 = 0
+    int sum3 = sum_int(1, "abc", 2, 3);	// sum3 = 6
+    return 0;
+}
+```
+
+如果需要强制输入的类型，可以使用模版非类型参数包：
+
+```cpp
+template<int... args> struct SumInt;
+template<>
+struct SumInt<> {
+  	static constexpr int result = 0;  
+};
+template<int first, int... rest>
+struct SumInt<first, rest...> {
+  	static constexpr int result = first + SumInt<rest...>::result;  
+};
+int main() {
+    int sum1 = SumInt<1, 2, 3>::result;	// sum1 = 6
+    int sum2 = SumInt<>::result;		// sum2 = 0
+ 	return 0;   
+}
+```
+
+不过用模版做这个确实有点大材小用（费劲儿），而且适用类型必须是合法的非类型模版参数，最重要的是需要编译期常量。因此还是前面一种方式比较合适。相比之下，**C#** 虽然引入了奇怪的关键字，但是相对更加优雅地解决了此类问题。
+
+### 方法返回值
+
+前面我们见到的函数返回值都是值返回值，其特点可以参考前面的值参数。也可以通过引用返回一个值：
+
+```c#
+class MyClass {
+    private int val = 42;
+    // 这个函数返回一个 ref 类型
+    public ref int GetReference() {
+        return ref val;							// 需要显式使用 ref 关键字
+    }
+    public void Display() {
+        Console.WriteLine($"The value is {val}");
+    }
+}
+class MyProgram {
+    static void Main() {
+        MyClass mc = new MyClass();
+        mc.Display();							// 输出 "The value is 42"
+        ref int rval = ref mc.GetReference();	// ref 类型变量左右都需要使用 ref 关键字
+        rval = 10;
+        mc.Display();							// 输出 "The value is 10"
+    }
+}
+```
+
+这里和 **C++** 的指针机制可以说是一模一样；通过这些使用 `ref` 的例子，能够发现使用在类型中的 `ref` 关键字等同于 **C++** 中的指针修饰符 `*`，而使用在表达式中的 `ref` 关键字等同于 **C++** 中的取地址运算符 `&`。结合前面的引用类型，我们可以将 `ref` 看作是显式的引用类型。此外，所有引用类型在使用时（不包括浅拷贝）都会自动解引用，因此才会出现上面奇怪的 `ref int rval = ref mc.GetReference()` 这样奇怪的东西。不过从 **C#** 本身的角度来看，倒是还算自洽。
+
+```cpp
+class MyClass {
+public:
+    int* get_reference() {
+        return &val;
+    }
+    void display() {
+        std::cout << "The value is " << val;
+    }
+private:
+    int val;
+};
+int main() {
+    MyClass mc = new MyClass();
+    mc->display();
+    int* rval = mc->get_reference();	// C++ 不会自动解引用（右侧的指针），因此这里正好赋值给左侧的指针
+    *rval = 10;							// 需要解引用
+    mc->display();
+}
+```
+
+最后有几个注意事项：
+
+- 不能返回空、常量、枚举、属性和指向只读位置指针的引用。简单概括就是 `ref` 只相关于可变的值，而属性（下一章会提到）本质是一个方法所以也不能返回（可能是其读写性质比较复杂因此这里没有进行适应）。所以说 `ref` 就等同于没有 `const` 修饰的指针，因此不能指向 `const` 类型。
+- 不能返回局部变量，这一点和 **C++** 的返回局部引用是类似的。
+- 如果返回引用的函数的返回语句没有使用 `ref` 关键字，那么只会返回一个值。这一点相当微妙，因为在调用处是无法意识到这一点的。
+- `ref` 类型的变量参与函数调用时，如果不使用引用参数传递，依然只传递值（当然，这个值可能是引用类型）。这是因为 **C#** 对所有引用的使用都会自动解引用。
+
+### 可选参数和命名参数
+
+值参数可以使用可选参数特性，即提供一个默认值在调用时可以省略，对于引用类型则只能使用 `null` 作为默认值。比较奇怪的是 `ref` 不允许使用可选参数（这让我开始怀疑 `ref` 更类似于 **C++** 的引用类型）。此外，可选参数总出现在方法参数列表的最后（但在参数数组之前）。总体上和 **C++** 是一致的。
+
+命名参数是指在调用处通过指定参数名称来提示调用的实际行为：
+
+```c#
+class MyProgram {
+    public int calculate(int x, int y, int z) {
+        return (x + y) * z;
+    }
+    static void Main() {
+        int ans1 = calculate(y: 1, x: 2, z: 3);		// ans = 9
+        int ans2 = calculate(z: 0, y: 2, x: 4);		// ans = 0
+    }
+}
+```
+
+**C++** 有生之年很难实现这个功能，因为 **C++** 允许且存在大量的函数声明，并且声明和定义分离也是主流的程序设计思路。此时如果声明和定义处参数名称不同，就不能确定命名参数的标准（最主要，定义是被隐藏的）。并且在已有的各个版本中，参数名称甚至都是可选的。所以命名参数可能没法实现了。
+
+感谢于命名参数，调用存在可选参数的方法时不一定只能从后向前隐藏参数值了。我们可以显式给出特定参数的值，省略的则根据可选参数的默认值来进行调用。这一点非常方便。
+
+## 深入理解类
+
+章节开头，《C#教程》给出了 **C#** 中类中所有可能的成员：
+
+- 数据成员：字段或常量。**C#** 的常量有点类似于 **C++** 的静态编译期常量，即使用 `static constexpr` 修饰的变量。
+- 函数成员：方法、属性、构造函数、析构函数、运算符、索引以及事件。这里面除了属性、索引和事件外都是 **C++** 中也存在的概念。
+
+基本所有成员都可以使用访问修饰符和 `static` 修饰符修饰（除了常量和索引器之外）。`static` 修饰的成员（静态成员）可以直接通过类名调用。此外也可以用 `using static` 声明来将静态成员引入当前的命名空间：
+
+```c#
+class MyClass {
+    public static int val = 10;
+}
+using static MyClass.val;
+class MyProgram {
+    static void Main() {
+        Console.WriteLine($"MyClass.val = {val}");	// 输出 10
+    }
+}
+```
+
+### 属性
+
+**C#** 的属性看起来就像一个字段。不同的是后面会跟着可选的 `get` 与 `set` 方法：
+
+```c#
+class MyClass {
+    private int _val;		// 这是实际上的字段
+    public int val {		// 并不会分配新的空间
+        set {				// set 方法会在为属性 val 赋值的时候调用
+            _val = value;	// value 是一个上下文关键字，这里表示输入的参数
+        }
+        get {				// get 方法会在使用属性 val 的时候调用
+            return _val;
+        }
+    }
+}
+```
+
+属性可以随意地访问类中其它的字段，所以在实现上相当灵活。同时也可以简化上面这个平凡定义：
+
+```c#
+class MyClass {
+    public int val { get; set; }	// 实现了默认的属性，这里会分配一个 int 的空间
+}
+```
+
+当然，这样的情形与声明一个 `public` 字段无异。更多的情况下，我们会通过省略属性的 `get` 和 `set` 控制属性的可读性和可写性；同时也可以为它们加上 `private` 修饰符来控制其对外部的可读性和可写性：
+
+```c#
+class MyClass {
+ 	public int val { private get { return 10} }   // 只提供了对内部的可读性，不可写。
+}
+```
+
+只读属性的好处在于什么呢？观察下面的例子：
+
+```c#
+class RightTriangle {
+ 	public double A;
+    public double B;
+    public double Hypotenuse {				// 这里斜边总是取决于另外两边，因此“不可写”，但是其表现得像一个普通的字段
+     	get { return Math.sqrt(A*A + B*B) }   
+    }
+}
+```
+
+如果在 **C++** 中，就只能将 `hypotenuse` 设置为一个函数了，这样在调用的时候就显得没有那么好看。我也一直想要让零参数的函数能够省略括号（然后强制函数指针使用取地址运算符就不会有歧义了），可惜这个改变不太可能。我个人对 **C#** 的属性在控制读写的功能上取保守态度，可能是因为习惯了 **C++** 中修饰符成为类型一部分的风格，**C#** 属性的可读写性不能从它的类型中看出来。不过 **IDE** 或许能够告诉我们它实现了怎样的 `get` 和 `set` 方法，这样就没有什么问题。
+
+静态属性没有什么特别的，和静态字段大体相似。
+
+### 构造函数和初始化
+
+**C#** 的构造函数非常类似于 **C++** ，也支持构造函数初始化列表的语法。不过 **C#** 最令人羡慕的是静态构造函数，在任何类实例被创造之前以及静态成员被引用之前就会调用静态构造函数。这样就能保证类中静态成员的初始化以及让其遵守特定的顺序。在 **C++** 的话，做到同样效果就是一个非常消耗脑细胞的操作（我寻思加一个静态构造函数问题应该不大吧）。
+
+**C#** 中的初始化和对象构造是一个并列的概念，总是在构造对象之后才进行初始化：
+
+```c#
+class MyClass {
+ 	public int x;
+    public int y;
+    private int z = 5;
+    public MyClass(int z_) : z(z_) {}
+}
+class MyProgram {
+ 	static void Main() {
+     	MyClass mc = new MyClass { x = 10, y = 20 };	// x = 10, y = 20, z = 5
+        MyClass mc = new MyClass(5) { x = 10, y = 20 };	// x = 10, y = 20, z = 5
+    }
+}
+```
+
+这是一个比较方便的语法糖，可以通过初始化语法将指定的公有成员进行赋值。
+
+至于 **C++** 的初始化？别问我 **C++** 的初始化，它简直像一坨屎。从功能上当然是不缺的，但是它就是一坨屎。**C++20** 开始支持的聚合初始化有类似于上文中初始化的格式，不过要求巨多（你可以基本认为只有写成 **C** 结构体那样的才能使用这样的初始化语法）。
+
+### `this` 关键字
+
+**C#** 中的 `this` 除了能表示当前实例的引用外，还能用于定义索引器。
+
+```c#
+class MyClass {
+    private string str1;
+    private string str2;
+    private string str3;
+    public string this [int idx] {	// 索引器使用 this 关键字以及 [] 符号，初看有些奇怪但是不无道理
+        get {
+            switch (idx) {
+                case 0: return str1;
+                case 1: return str2;
+                case 2: return str3;
+                default: throw new ArgumentOutOfRangeException("Index");
+            }
+        }
+        set {
+            switch (idx) {
+                case 0: str1 = value;
+                case 1: str2 = value;
+                case 2: str3 = value;
+                default: throw new ArgumentOutOfRangeException("Index");
+            }
+        }
+    }
+}
+class MyProgram {
+    static void Main() {
+        MyClass mc = new MyClass();
+        mc[0] = "abc";
+        mc[1] = "def";
+        mc[2] = "ghi";
+        Console.WriteLine("mc.str1 = {mc[0]}, mc.str2 = {mc[1]}, mc.str = {mc[2]}");
+    }
+}
+```
+
+索引器本身也是一个方法（或者说是属性），因此可以被重载。这就给 **C#** 增加了不少表达力。
