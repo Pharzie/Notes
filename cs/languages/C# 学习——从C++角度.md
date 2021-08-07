@@ -4,7 +4,7 @@
 
 最近出于兴趣开始接触 **C#** 。为了更好地理解一些语法特征，我也会主动尝试对标 **C++** 中同等的功能，所以不由得会有两者间的比较；并且早就对它优于 **Java** 的语言特性有所耳闻，于是眼睛会更加叼一些。
 
-参考书是《C#图解教程（第5版）》（下文会简称为《C#教程》），本笔记的所有章节内容都是根据原书，以个人关注点为导向的东西，并不能反映原书的全部知识点。
+参考书是《C#图解教程（第5版）》（下文会简称为《C#教程》），本笔记的所有章节内容都是根据原书分划，并以个人关注点为导向的东西，并不能反映原书的全部知识点。
 
 ## **C#** 和 **.NET** 框架
 
@@ -45,7 +45,7 @@ namespace MyNamespace {
 }
 ```
 
-《C#教程》中罗列的 **C#** 的关键字足足有 77 个之多，其中不少是我难以猜测作用的新面孔。除此之外还有 26 个 **上下文关键字（Context-Sensitive Keyword）**，真的相当之多。**C++** 中也有上下文关键字的概念，能够立刻想到的是诸如 `override` 和 `final` 这样 **C++11** 之后添加的，只有在特定位置才会被识别为关键字。
+《C#教程》中罗列的 **C#** 的关键字足足有 77 个之多，其中不少是我难以猜测作用的新面孔。除此之外还有 26 个 **上下文关键字（Context-Sensitive Keyword）**，真的相当之多。**C++** 中也有上下文关键字的概念，能够立刻想到的是诸如 `override` 和 `final` 这样 **C++11** 之后添加的，它们只有在特定位置才会被识别为关键字。
 
 **C#** 中的字符串可以进行格式化输出：
 
@@ -247,7 +247,7 @@ class MyProgram {
 }
 ```
 
-在微软的官网上这样总结 `ref`、`out`、`in` 三种参数传递：
+我们可以这样总结 `ref`、`out`、`in` 三种参数传递：
 
 | **参数类型**      | 在函数中的行为            | 传递方式                                                |
 | ----------------- | ------------------------- | ------------------------------------------------------- |
@@ -285,7 +285,7 @@ class MyProgram {
 }
 ```
 
-比起直接传递数组，参数数组语法上更加简洁，在需要不定个数的同类型参数时比较好用。**C++** 中可以使用（过时的）可变参数函数，不过这个局限太大了（首先就是根本不知道有多少参数）。也可以使用初始化列表类型（**C++11**)，但是在调用处需要显示写出大括号，有时可能还要给出里面元素的类型。最通用的是使用模版参数包（**C++11**），不过它对类型的控制不是很严格，可能需要 `constexpr-if`（**C++17**）：
+比起直接传递数组，参数数组语法上更加简洁，在需要不定个数的同类型参数时比较好用。**C++** 中可以使用（过时的）可变参数函数，不过这个局限太大了（首先就是根本不知道有多少参数）。也可以使用初始化列表类型（**C++11**)，但是在调用处需要显示写出大括号，有时可能还要给出里面元素的类型。最通用的是使用模版参数包（**C++11**），不过它对类型的控制不是很严格，可能需要 `constexpr-if`（**C++17**）或者概念（**C++20**）：
 
 ```cpp
 int sum_int() {
@@ -501,7 +501,9 @@ class MyProgram {
 
 至于 **C++** 的初始化？别问我 **C++** 的初始化，它简直像一坨屎。从功能上当然是不缺的，但是它就是一坨屎。**C++20** 开始支持的聚合初始化有类似于上文中初始化的格式，不过要求巨多（你可以基本认为只有写成 **C** 结构体那样的才能使用这样的初始化语法）。
 
-### `this` 关键字
+### 其它特性
+
+字段可以被声明为 `readonly`，这样在初始化之后就不能再进行修改，这一点和 **C++** 的 `const` 类似。
 
 **C#** 中的 `this` 除了能表示当前实例的引用外，还能用于定义索引器。
 
@@ -540,4 +542,802 @@ class MyProgram {
 }
 ```
 
-索引器本身也是一个方法（或者说是属性），因此可以被重载。这就给 **C#** 增加了不少表达力。
+索引器本身也是一个方法（或者说是属性），因此可以被重载。这就给 **C#** 增加了不少表达力。**C++** 中会使用下标运算符重载来实现索引功能，从语言设计上噪声更小一点。
+
+**C#** 中允许将类的定义分在不同文件中（称为分布类），这需要用到上下文关键字 `partial`。除此之外，也允许声明分布方法，即在分布类的一个部分中不给出定义，而在另一个部分中给出。分布方法不能再使用任何其它修饰符，因此分布方法一定是私有的。此外，返回类型只能是 `void`，参数中也不能包含 `out` 类型的参数。可以说是处处受限。
+
+```c#
+partial class MyClass {
+    partial void Method(int x, int y);
+    public void PrintSum(int x, imt y) {
+     	method(x, y);   
+    }
+}
+partial class MyClass {
+ 	void Method(int x, int y) {
+        Console.WriteLine($"Sum is {x + y}");
+    }
+}
+```
+
+这个特性我感觉略有些意义不明，尤其是对于局部方法的限制过多。**C++** 中显然是不存在分布类的概念的，当然也不允许分布方法。如果考虑声明定义分离的形式，那可能比 **C#** 要灵活得多。
+
+## 类和继承
+
+**C#** 派生基类的方式和 **C++** 类似，即使用 `:` 而非引入新的关键字。所有类型都直接或间接继承自 `object` 类，这点和 **Java** 类似。如果要 **屏蔽（Mask）** 基类的成员，可以使用 `new` 关键字告知编译器。这个特性和 **C++** 的成员 **隐藏（Hiding）** 类似，不过 **C++** 没有提供 `new` 这样的编译器检查标记。
+
+```c#
+class BaseClass {
+ 	public int field1;
+    static string field2;
+    int field3;
+    public void Method(int x) {
+     	// 省略定义  
+    }
+}
+class DerivedClass : BaseClass {
+ 	new public int field1;  		// 显式屏蔽
+    new static string field2;		// 静态变量也可以被屏蔽
+    int field3;						// 隐式屏蔽了基类的 field3，但是会产生编译器警告
+    new public void Method(int x) {
+        // 省略定义
+    }
+}
+```
+
+虽然屏蔽了基类的成员，我们依然可以通过 `base` 关键字来访问他们。
+
+```c#
+class BaseClass {
+ 	public string field = "String in the base class";   
+}
+class DerivedClass : BaseClass {
+ 	new public string field = "String in the derived class";
+    public void PrintFields() {
+     	Console.WriteLine(field);		// 输出派生类中的 field
+        Console.WriteLine(base.field);	// 输出基类的 field
+    }
+}
+```
+
+派生类可以以基类类型进行引用；派生类也可以直接转换为基类类型。
+
+```c#
+class BaseClass {
+    public void Print() {
+        Console.WriteLine("Base class");
+    }
+}
+class DerivedClass : BaseClass {
+    new public void Print() {
+        Console.WriteLine("Derived class");
+    }
+}
+class MyProgram {
+    static void Main() {
+        DerivedClass dc = new DerivedClass();
+        dc.Print();					// 输出 "Base class"
+        BaseClass bc = (DerivedClass) dc;
+        bc.Print();					// 输出 "Derived class"
+    }
+}
+```
+
+**C++** 中指定成员或成员函数访问更加的灵活：
+
+```cpp
+struct BaseClass {
+    void print() {
+        std::cout << "Base class";
+    }
+};
+class DerivedClass : BaseClass {
+    void print() {
+        std::cout << "Derived class";
+    }
+};
+int main() {
+    DerivedClass* dc = new DerivedClass();
+    dc->print();				// 输出 "Base class"
+    dc->BaseClass::print();		// 输出 "Derived class"
+    BaseClass* bc = dc;			// 从派生类指针到基类指针不需要显式转换
+    bc->print();				// 输出 "Base class"
+    static_cast<DerivedClass*>(bc)->print();		// 输出 "Derived class"
+    return 0;
+}
+```
+
+可以看到 **C++** 在这这方面的处理是非常自由的，可以说只要有继承关系，想用哪个类的成员或成员函数就能用哪个。
+
+### 虚函数和重写
+
+类与继承的一个核心内容就是虚函数与函数重写。**C#** 采用了和 **C++** 类似的关键字 `virtual` 和 `override`（**C++11**），不过在 **C#** 中 `override` 是必须的。
+
+```c#
+class BaseClass {
+ 	virtual public void Print() {
+        Console.WriteLine("Base class");
+    }   
+}
+class DerivedClass : BaseClass {
+    override public void Prinmt() {			// 重写了基类的方法
+        Console.WriteLine("Derived class");
+    }
+}
+class MyProgram {
+    static void Main() {
+        BaseClass bc = new DerivedClass();
+        bc.Print();				// 输出 "Derived class"，可以看到虽然声明为基类，却有派生类的行为。
+    }
+}
+```
+
+当存在一连串的重写时，会调用进行重写的最深的派生类（实例的类型可能更深，但它不一定进行了重写）：
+
+```c#
+class BaseClass {
+    virtual public void Print() {
+        Console.WriteLine("Base class");
+    }
+}
+class FirstDervied : BaseClass {
+    override public void Print() {
+        Console.WriteLine("First derived class");
+    }
+}
+class SecondDerived : FirstDerived {
+    new public void Print() {			// 这里没有重写，而是屏蔽了基类的方法
+        Console.WriteLine("Second derived class");
+    }
+}
+class MyProgram {
+    static void Main() {
+        BaseClass bc = new SecondDerived();
+        bc.Print();				// 输出 "First derived class"
+    }
+}
+```
+
+上面我们的举例都是对方法的重写，而同为函数成员的如属性、索引器也可以进行重写，其行为和我们已经看到的类似。
+
+### 构造函数初始化
+
+前面我们提到，**C#** 的构造函数初始化列表用法和 **C++** 相似。除此之外，也可以在初始化列表中使用构造函数或者基类的构造函数：
+
+```c#
+class BaseClass {
+    readonly int cval;
+ 	BaseClass() : cval(10) {}
+}
+class DerivedClass : BaseClass {
+    readonly string cstr;
+    public string item;
+    public int count;
+    DerivedClass() : base() {		// 调用了（直接）基类的构造函数
+        cstr = "abcdefg";
+    }
+    public DerivedClass(string item_, int count_) : this() {	// 调用了 DerivedClass() 构造器
+        item = item_;
+        count = count_;
+    }
+}
+```
+
+这点从功能上是和 **C++** 别无二致，但是后者需要显式写出类的名称，不是很方便但是可能更加清晰。此外，在进行虚继承的时候，也不得不使用显式给出类名的写法，因此 **C++** 的设计上没有什么问题。
+
+### 程序集和访问修饰
+
+和 **C++** 不同的是，**C#** 允许对类使用访问修饰符，包括：
+
+- `public`：该类对任何程序集可视
+- `internal`：该类只对同一个程序集可视
+
+对成员的访问修饰符则分为下面几种：
+
+- `public`：该成员对任何程序集的任何类都可视
+- `protected`：该成员对任何程序集的继承于该类的类可视
+- `internal`：该成员对同一程序集的任何类都可视
+- `protected internal`：该成员对同一程序集的任何类以及不同程序集的继承于该类的类可视
+- `private`：该成员对任何其它类都不可视
+
+下面是一个展示不同程序集间类和方法调用的示例：
+
+```c#
+// Base.cs
+using System;
+namespace BaseClassNS {
+	public class BaseClass {
+        public void Print() {
+            Console.WriteLine("Base class");
+        }
+    }   
+}
+```
+
+```c#
+// Main.cs
+using System;
+using BaseClassNS;				// 通过 using 其它程序集类所在的命名空间来导入
+namespace MyNamespace {
+    class DerivedClass : BaseClass {
+        // 省略类定义
+    }
+    class MyProgram {
+        static void Main() {
+            DerivedClass dc = new DerivedClass();
+            dc.Print();			// 输出 Base class
+        }
+    }
+}
+```
+
+### 抽象类
+
+**C#** 中当然也有抽象类的概念，使用 `abstract` 关键字，其中通常会有抽象成员（如方法、属性、索引器等）。抽象类不能被实例化。抽象方法则是没有提供实现的方法。抽象属性是使用默认 `get` 与 `set` 的属性（但实际上是没有实现）。一个继承于抽象类的非抽象类必须实现前者的所有抽象方法，这个实现被视作重写。
+
+```c#
+abstract class AbstractBase {
+    abstract public void Print();
+}
+class DerivedClass : AbstractBase {
+    override public void Print() {
+        Console.WriteLine("Derived class");
+    }
+}
+class MyProgram {
+    static void Main() {
+        AbstractBase ab = new DerivedClass();	// 可以声明为抽象类类型
+        ab.Print();
+    }
+}
+```
+
+如果和 **C++** 对比，抽象方法等价于 **C#** 的纯虚函数，抽象类等价于包含纯虚函数的类型（因此不需要显式将类声明为抽象）。个人更喜欢 **C++** 的设计，更加简洁且清晰。
+
+```cpp
+struct AbstractBase {
+    virtual void print() = 0;			// 纯虚函数表示为 virtual = 0 个人非常喜欢
+};
+struct DerivedClass : AbstractBase {
+    void print() override {				// C++ 中的 override 仅提示编译器进行检查，并不是必须的
+        Console.WriteLine("Derived class");
+    }
+};
+int main() {
+    AbstractBase* ab = new DerivedClass();
+    ab->print();
+    delete ab;
+    return 0;
+}
+```
+
+### 其它特性
+
+密封类是使用关键字 `sealed` 关键字声明的类，防止该类被继承。这一点和 **C++** 的 `final` 标记（**C++11**）是一致的。
+
+```c#
+sealed class FinalClass {
+    // 省略类定义
+}
+```
+
+静态类是一系列静态成员的集合；这些成员可以像普通类里的静态成员一样被引用。
+
+```c#
+static class StaticClass {
+    public const float PI = 3.14f;
+    public static int add(int x, int y) {
+        return x + y;
+    }
+}
+```
+
+静态类常用于扩展方法。扩展方法是指将静态类中的类当作其它类的成员一样调用：
+
+```c#
+class Point {
+    public float x { get; set; }
+    public float y { get; set; }
+    public Point(float x_, float y_) : x(x_), y(y_) {}
+}
+static class PointExtension {
+    public static float distance(this Point p) {	// 使用 this 关键字
+        return Math.sqrt(p.x * p.x + p.y * p.y);
+    }
+}
+class MyProgram {
+    static void Main() {
+        Point p = new Point(1.0f, 2.0f);
+        Console.WriteLine("Distance from the origin: {p.distance()}");
+    }
+}
+```
+
+**C++** 并没有静态类的概念，但是常规类可以达到相同的效果；扩展方法这个特性则并不支持，但个人还挺喜欢这个语法糖的。
+
+## 表达式和运算符
+
+这个部分和 **C++** 基本上没有区别。这里就展开说明一下运算符重载。**C#** 的运算符重载不包括赋值运算符，且一定是静态方法：
+
+```c#
+class Pair {
+    public float x { get; set; }
+    public float y { get; set; }
+    public Pair(float x_, float y_) : x(x_), y(y_) {}
+    public static Pair operator -(Pair p) {
+        return Pair(-p.x, -p.y);
+    }
+    public static Pair operator +(Pair p1, Pair p2) {
+        return Pair(p1.x + p2.x, p1.y + p2.y);
+    }
+}
+```
+
+**C++** 中的 `friend` 运算符重载与这个的形式比较类似，不过其所在定义域比较模糊，不如 `static` 方法来的清楚。此外，**C++** 支持赋值运算符的重载并强制其定义为成员函数，这也是和类的“三大件”中拷贝赋值（即赋值运算符的重载）的一个拓展。不可否认的是 **C++** 有更为丰富的重载支持，尤其是对于函数调用符 `()` 的重载非常好用。
+
+**C#** 中有一个 `typeof` 运算符可以得到一个 `System.Type` 的对象，这个类型提供了一些方法能够在运行时得到某个类型的信息。
+
+```c#
+using System.Reflection
+class MyClass {
+    public int field;
+    public int Mehod(int x) {
+        return x;
+    }
+}
+class MyProgram {
+    static void Main() {
+        Type t = typeof(MyClass);
+        FieldInfo[] fields = t.GetFields();		// 得到字段的信息数组
+        MethodInfo[] methods = t.GetMethods();	// 得到方法的信息数组
+        foreach (FieldInfo f in fields) {
+            Console.WriteLine($"Field: {f.name}");
+        }
+        foreach (FieldInfo m in methods) {
+            Console.WriteLine($"Method: {m.name}");
+        }
+    }
+}
+```
+
+**C++** 不支持反射（手动微笑），从某种角度讲让 **C++** 支持反射那真的是一项恢弘的任务（标准委员会：已经新建文件夹了）。`typeid` 运算符倒是能够提供一点运行时的类型信息，但是功能非常有限。
+
+## 语句
+
+这个部分和 **C++** 也是大同小异，值得一提的是 `switch` 语句。在 **C# 7.0** 之后，可以利用 `switch` 语句匹配任意类型的对象（之前则和 **C++** 一致，只能匹配整型，即整数、布尔值、枚举等）。此外，所有的 `case` 语句必须 `break` 等跳转语句退出（即不允许 **穿过（Fallthrough）**），否则会报错。这一点有助于避免受到继承自 **C** 的穿过规则的荼毒，但是既然强制退出那为什么不直接默认不穿过呢？虽然不支持穿过，但是依然可以通过罗列 `case` 来让多种模式匹配同一段代码。
+
+此外，也可以在 `switch` 语句中使用 `goto case Pattern` 的方式跳转到当前的 `switch` 语句中的某个标签处。
+
+**C#** 也提供了用于捕捉异常的 `using` 语句：
+
+```c#
+using System;
+using System.IO;
+class MyProgram {
+    static void Main() {
+        using (TextWriter file = File.CreateText("data.txt")) {	// 文件操作可能会遇到错误
+            file.WriteLine("Some text...");
+        }
+        using (TextReader file = File.OpenText("data.txt")) {
+            string line;
+            while ((line = file.ReadLine()) != null) {
+                Console.WriteLine(line);
+            }
+        }
+    }
+}
+```
+
+`using` 语句本质是 `try` 语句的一个语法糖。在资源分配后，如果语句块内出现了任何异常，都会自动将资源释放。如果存在多个需要管理的同类型资源，可以在 `using` 语句中用逗号分隔多个变量的初始化语句，即 `ResrcType re1 = expr1, re2 = expr2`。
+
+**C++** 没有这样的语法糖。
+
+## 结构
+
+**C#** 提供了类似于 **C** 语言中结构体的概念，但引入了访问修饰符、构造函数以及属性。比较特殊的是，结构不能定义无参数的构造函数以及析构函数，也不能初始化任何字段或属性。此外，结构一定是密封的，所以结构不能有继承关系（也因此，许多修饰符在结构中都没有意义，也不允许使用，比如 `protected`、`virtual` 等）。
+
+好玩的是，所有结构都继承自一个类 `System.ValueType`，因此可以在结构中使用 `override` 关键字来重写这个类中的方法。
+
+最后，虽然实际上是在栈上分配的，在初始化语句还是需要 `new` 运算符。
+
+```c#
+struct Point {
+ 	public int X;
+    public int Y;
+    public Point(int x, int y) {
+        X = x;
+        Y = y;
+    }
+}
+class MyProgram {
+    static void Main() {
+        Point p = new Point(1, 2);
+        Console.WriteLine($"p.x = {p.x}, p.y = {p.y}");
+    }
+}
+```
+
+**C++** 中因为类本身可以在栈上分配，因此没必要创建结构这样的概念。事实上 **C++** 中也有 `struct` 这个关键字，但是它和 `class` 唯一的区别就是前者的所有成员和成员函数默认为 `public`，而后者是 `private`。
+
+## 枚举
+
+**C#** 的枚举和 **C++** 基本一致，只是前者直接就有作用域，相当于 **C++** 的 `enum class`。此外可以使用 `using static` 将枚举中的元素引入到当前作用域。**C++** 直到 **C++23** 才引入 `using enum` 这个简直相当便利的语法。
+
+```c#
+enum Colors {
+    Red, Blue, Green
+}
+using static Colors.Red;
+class MyProgram {
+    static void Main() {
+        Console.WriteLine($"Red = {Red}");	// 输出 "Red = 0"
+    }
+}
+```
+
+## 数组
+
+**C#** 的数组都是静态的，即其大小在创建时就已经确定。不过和 **C++** 不同，一维数组的类型是 `ElemType[]` 而非 **C++** 中的 `ElemType[N]`（个人感觉后者更为严谨）。至于多维数组，**C#** 的矩形数组和 **C++** 的（静态）多维数组一致，但是其类型是 `ElemType[,]`（二维数组）及 `ElemType[,,]`（三维数组）等，而非 `ElemType[M][N]` 及 `ElemTyp[L][M][N]` 等。
+
+**C#** 中的一维数组和矩形数组在进行初始化时可以省略 `new` 的部分：
+
+```csharp
+class MyProgram {
+    static void Main() {
+        int[] arr = new int[3] { 1, 2, 3 };				// 一维数组，这里的 new int[3] 可以省略
+        int[,] mat = new int[3,2] { {1, 2}, {3, 4}, {5, 6} };	// 二维矩形数组，同样可以省略 new int[3,2]
+    }
+}
+```
+
+交错数组则可以看作是指针的数组，指针指向的数组大小可以是任意的（只要它们的秩相同），但当然也可以指向特定的数组类型，比如 `new int[3][]` 就是存储 `int[]` 类型的交错数组（其长度为 3），`new int[][,]` 就是存储 `int[,]` 类型的交错数组：
+
+```csharp
+class MyProgram {
+    static void Main() {
+        int[][,] arr = new int[3][,];
+        arr[0] = { {1, 2}, {3, 4} };			// arr[0] 是一个 new int[2,2]
+        arr[1] = { {2, 3}, {4, 5}, {6, 7} };	// arr[1] 是一个 new int[3,2]
+        arr[2] = { {8, 9} };					// arr[2] 是一个 new int[1,2]
+    }
+}
+```
+
+可以看到，交错数组并不要求数组中元素的完全一致（从 **C#** 角度看，它们确实是一个类型，只不过可以实例化为不同大小的数组）。在 **C++** 中，这实际上就是一个指针的数组，或多重指针：
+
+```cpp
+int main() {
+    int arr1[3][] = { {1, 2}, {3, 4}, {5, 6} };	// 这依然是一个静态数组，左侧的 int[3][] 只是 int[3][2] 的简略写法
+    int* arr2[3] = { new int[2] {1, 2}, new int[3] {3, 4, 5}, new int[1] {6} };
+    	// 一个动态数组（指针）的静态数组。C++ 支持一句代码初始化这样的数组
+    for (int i = 0; i < 3; ++i) {
+        delete arr2[i];			// 不过并不支持一句代码释放资源
+    }
+    int** arr3 = new int*[2] { new int[3] {1, 2, 3}, new int[2] {4, 5} };
+    	// 一个动态数组的动态数组。依然可以一句话初始化这样的数组。
+    for (int i = 0; i < 2; ++i) {
+        delete arr3[i];
+    }
+    delete arr3;
+    return 0;
+}
+```
+
+**C#** 提供了 `foreach` 语句专门用来遍历数组，它能够依次产生每个元素的引用。
+
+```csharp
+class MyCLass {
+    public int Field = 0;
+}
+class MyProgram {
+    MyClass[] mcArr = new MyClass[3];
+    int[] iArr = new int[3];
+    foreach (MyClass mc in mcArr) {		// mc 是一个迭代变量，代表每次遍历到的元素
+        ++mc.Field;			// 可以通过遍历访问或修改每个元素的成员
+    }
+    foreach (int i in iArr) {
+        ++i;				// 编译错误。这里其实我不是很理解为什么要强制成编译错误
+    }
+}
+```
+
+可以看到，值类型不能通过 `foreach` 语句修改，但是引用类型可以。在 **C++** 里面不太好找到等价的机制。`range for` 不能对内置数组使用，而是针对实现了 `begin()`、`end()` 以及 `operator ++()` 的类型使用。从某种角度讲，**C++** 的内置数组并不受待见，通常不被当作默认的线性存储结构（相比之下 `std::vector<>` 更通用），因此 **C++** 比起专门对数组设计一个 `foreach` 语法，它提供了更加通用抽象的，可以对任意可遍历结构进行遍历的 `range for`。而且，后者可以按照需求，将迭代变量声明为引用、常量或常引用。
+
+```cpp
+int main() {
+    std::vector<int> v = { 1, 2 ,3 };
+    for (int i : v) {			// 以值方式得到迭代变量，相当于每次拷贝一个元素
+        std::cout << i << ' ';
+    }
+    for (int& i : v) {			// 以引用方式得到迭代变量，因此可以修改元素
+        ++i;
+    }
+}
+```
+
+值得一提的是，**C#** 的数组类型继承自 `System.Array`，所以它本质上也是一个类。我们可以使用 `Clone()` 方法深拷贝一个数组。不过返回的类型是 `object[]`，必须要显式转换为需要的数组类型。
+
+最后，数组中的任何一个元素都能通过引用方式从函数返回：
+
+```csharp
+class MyProgram {
+    public static ref MaxRef(int[] nums) {
+        int max_idx = 0;
+        int max = nums[0];
+        for (int i = 0; i < nums.Length; ++i) {
+            if (nums[i] > max) {
+                max_idx = i;
+                max = nums[i];
+            }
+        }
+        return ref nums[i];
+    }
+    static void Main() {
+        int[] scores = { 30, 75, 24, 80, 40 };
+        ref int max_score = ref MaxRef(scores);
+        max_score += 10;
+        Console.WriteLine($"Max is now: {scores[3]}");	// 输出 "Max is now: 90"
+    }
+}
+```
+
+回顾之前我们对 `ref` 和 **C++** 中指针的对应性，这样的特性是理所应当存在的。
+
+## 委托
+
+**C#** 的委托概念比较特殊，让我们先用一个例子展示：
+
+```csharp
+delegate void PrintDel(int val);
+class MyProgram {
+    void PrintTwice(int val) {
+        Console.WriteLine("{0}, {0}", val);
+    }
+    void PrintThreeTimes(int val) {
+        Console.WriteLine("{0}, {0}, {0}", val);
+    }
+    static void Main() {
+        MyProgram program = new MyProgram();
+        PrintDel print;
+        int val = 10;
+        print = new PrintDel(program.PrintTwice);	// print 委托赋值为 printTwice
+        print(val);			// 输出 10, 10
+        print = new PrintDel(program.PrintThreeTimes);
+        print(val);			// 输出 10, 10, 10
+    }
+}
+```
+
+这个和 **C++** 的函数指针类型类似。
+
+```cpp
+using PrintType = void (*)(int);		// using 语句，右侧是一个函数指针的类型
+typedef int (*AddType)(int a, int b);	// typedef 语句，形式上更加类似 C# 的委托
+
+void print_int(int val) {
+    std::cout << val;
+}
+int add_int(int a, int b) {
+    return a + b;
+}
+int main() {
+    PrintType print = &print_int;		// 可以省略这里的取地址运算符，因为 C++ 中函数会退化为函数指针
+    print(10);				// 输出 10。C++ 中函数指针可以自动被解引用
+    AddType add = &add_int;
+    print(add(1, 2));		// 输出 3
+    return 0;
+}
+```
+
+可以看到，委托和函数指针基本上一致。不过上面举的例子都是普通的函数。如果是成员函数，指针的类型会变得异常复杂：
+
+```cpp
+struct MyClass {
+    int my_method(int a) {
+        return a;
+    }
+    MyClass* clone(MyClass* other) {
+        return other;
+    }
+};
+using MethodType = int (MyClass::*)(int);		// 需要显式给出成员函数所在类
+typedef MyClass* (MyClass::* CloneType)(MyClass* other);
+
+int main() {
+    MyClass mc;
+    MethodType method = &MyClass::my_method;
+    std::cout << (mc.*method)(10);		// 需要额外注意的是，.* 运算符优先级要低于 operator ()，所以需要括号扩起来
+    CloneType clone = &MyClass::clone;
+    std::cout << (mc == (mc.*clone)(mc));
+    return 0;
+}
+```
+
+相比之下，**C#** 的委托用起来要更轻松一些（不用区分静态方法和普通方法），也没有引入什么奇怪的运算符。
+
+**C#** 支持委托的组合，也即以一定顺序执行一系列相同类型的方法。这些方法的参数都是调用时提供的；但是对于 `ref` 类型参数，这个引用会一步步向下传递，因此可能每次调用的参数值（解引用）都是不一样的：
+
+```csharp
+delegate void PrintDel();
+class MyClass {
+    public void Print1() {
+        Console.WriteLine("Print1");
+    }
+    public static void Print2() {
+        Console.WriteLine("Print2");
+    }
+}
+class MyProgram {
+    static void Main() {
+        MyClass mc = new MyClass();
+        PrintDel print;
+        print = mc.Print1;
+        print += MyClass.Print2;
+        print += mc.Print1;
+        if (print != null) {
+            print();		// 输出 Print1Print2Print1
+        }
+    }
+}
+```
+
+委托组合并不在意其中函数的返回值；只有最后一个返回值会被采用并作为最后的返回值。这么来看，委托是一种相当松散的函数结构。
+
+### 匿名函数
+
+可以利用 `delegate` 关键字创造匿名函数：
+
+```csharp
+delegate int SomeDel(int x);
+class MyProgram {
+ 	static void Main() {
+     	SomeDel del1 = delegate (int x) { return x + 1; };
+        SomeDel del2 = delegate { return 42; };		// 参数列表中没有 out 类型且没有使用任何参数时，可以省略参数列表
+        int x = del1(1);		// x = 2
+        int y = del2(1000);		// y = 42
+    }
+}
+```
+
+挺奇怪的是，参数数组在匿名函数中需要省略 `params` 关键字。这样的话怎么区分数组类型和参数数组？
+
+此外，匿名函数可以自然地捕获外部的变量，并且延伸其生命周期（**C++** 馋哭了）。
+
+```csharp
+delegate int Del();
+class MyProgram {
+    static void Main() {
+        Del del;
+        {
+            int x = 10;
+            del = delegate { return x; };		// 捕获了局部变量 x
+        }
+        Console.WriteLine($"x = {del()}");		// 输出 10
+    }
+}
+```
+
+在 **C# 3.0** 之后，可以使用 `lambda` 表达式，这是比匿名函数更加简洁的形式：
+
+```csharp
+delegate int Del(int);
+class MyProgram {
+    static void Main() {
+    	Del del1 = x => x + 1;	// 等价于 delegate (int x) { return x + 1; }
+        Del del2 = x => 2 * x;	// 等价于 delegate (int x) { return 2 * x; }
+    }
+}
+```
+
+**C++11** 之后也引入了 `lambda` 表达式，但是不是很简洁：
+
+```cpp
+int main() {
+    auto lambda1 = [] (auto x) { return x + 1; };
+    auto lambda2 = [] (auto x) { return 2 * x; };
+ 	return 0;   
+}
+```
+
+**C++** 中 `lambda` 最令人头疼的还是捕获局部变量造成的内存泄漏：
+
+```cpp
+auto return_lambda() {
+ 	int a = 0, b = 0;
+    return [&a, &b] () { ++a; ++b; return a + b; };
+}
+int main() {
+    std::cout << return_lambda();	// 当场内存泄露，这是因为 lambda 捕获了局部变量的引用，在函数返回后就失效了
+    return 0;
+}
+```
+
+在 **C#** 中就不会有这样的疑虑。
+
+## 事件
+
+事件机制是 **C#** 内置的一个特性，它能够实现 **发布者/订阅者模式（Publisher/Subscriber Pattern）**，这个模式用于让一些类在指定情形下通知其它类进行特定操作。发布者定义了一些 **事件（Event）**，然后订阅者向发布者提供一个 **回调方法（Callback Function）** 以在事件发生时得到通知。下面是对这种模式分项的详细介绍：
+
+- 委托类型声明：我们需要为事件和事件处理方法定义一个公有的委托
+- **事件处理方法（Event Handler）**声明：订阅者类在事件发生后会执行的方法声明，可以是一个匿名函数
+- 事件声明：发布者类要声明一个订阅者类可以注册的事件成员。如果这个事件是 `public` 的，我们称发布了事件。
+- 事件注册：订阅者必须要注册事件才能在事件被触发时得到通知。
+- 触发事件：发布者类中触发事件，然后所有注册的订阅者调用对应的事件处理方法。
+
+下面是一个例子：
+
+```csharp
+delegate void Handler();		// 委托类型声明
+class Incrementer {				// 发布者
+	public event Handler CountedADozen;	// 事件声明
+    public void DoCount() {
+        for (int i = 1; i < 100; ++i) {
+            if (i % 12 == 0 && CountedADozen != null) {
+                CountedADozen();	// 每 12 次计数就触发一次事件
+            }
+        }
+    }
+}
+class Dozens {						// 订阅者
+    public int DozensCount { get; private set; }
+    public Dozens(Incrementer inc) {
+        DozensCount = 0;
+        inc.CountedADozen += IncrementDozensCount;	// 事件注册
+    }
+    void IncrementDozensCount() {	// 事件处理方法声明
+        ++DozensCount;
+    }
+}
+class MyProgram {
+    static void Main() {
+        Incrementer inc = new Incrementer();
+        Dozens dozensCounter = new Dozens(inc);
+        inc.DoCount();
+        Console.WriteLine("Number of dozens = {0}", dozensCounter.DozenCount);
+    }
+}
+```
+
+**GUI** 编程中会大量频繁地使用事件。**.NET** 提供了一个标准事件模式，即使用 `EventHandler` 作为委托类型，其接口是 `public delegate void EventHandler(object sender, EventArgs e)`。其中 `EventArgs` 可以用来传递数据，不过需要声明一个派生自 `EventArgs` 的类型。我们下面将按照标准事件模式来重新实现之前的例子：
+
+```csharp
+public class IncrementerEventArgs : EventArgs {		// 自定义的事件参数类型
+    public int IterationCount { get; set; }
+}
+class Incrementer {
+    public event EventHandler<IncrementerEventArgs> CountedADozen;
+    public void DoCount() {
+        IncrementerEventArgs args = new IncrementerEventArgs();
+        for (int i = 1; i < 100; ++i) {
+            if (i % 12 == 0 && CountedADozen != null) {
+                args.IterationCount = i;
+                CountedADozen(this, args);
+            }
+        }
+    }
+}
+class Dozens {
+    public int DozensCount { get; private set; }
+    public Dozens(Incrementer inc) {
+        DozensCount = 0;
+        inc.CountedADozen += IncrementDozensCount;
+    }
+    void IncrementDozensCount(object source, IncrementerEventArgs e) {
+        Console.WriteLine($"Incremented at itertion: {e.IterationCount} in {source.ToString()}");
+        ++DozensCount;
+    }
+}
+class MyProgram {
+    static void Main() {
+        Incrementer inc = new Incrementer();
+        Dozens dozensCounter = new Dozens(inc);
+        inc.DoCount();
+        Console.WriteLine($"Number of dozens = {dozensCounter.DozensCount}");
+    }
+}
+```
+
+**C++** 不存在原生的事件机制。
+
+## 接口
+
