@@ -1254,6 +1254,8 @@ int main() {
 
 在 **C#** 中就不会有这样的疑虑。
 
+最后，所有委托类型都继承自 `System.Delegate`。
+
 ## 事件
 
 事件机制是 **C#** 内置的一个特性，它能够实现 **发布者/订阅者模式（Publisher/Subscriber Pattern）**，这个模式用于让一些类在指定情形下通知其它类进行特定操作。发布者定义了一些 **事件（Event）**，然后订阅者向发布者提供一个 **回调方法（Callback Function）** 以在事件发生时得到通知。下面是对这种模式分项的详细介绍：
@@ -1340,4 +1342,449 @@ class MyProgram {
 **C++** 不存在原生的事件机制。
 
 ## 接口
+
+接口是一个声明却不实现任何方法的一个结构，可以理解为一个仅由抽象方法（及抽象属性、事件、索引器）组成的抽象类。因此，所有继承接口的类型必须实现接口中所有的方法。接口的示例如下：
+
+```csharp
+// 接口的所有成员都是 public 的，且不能被任何修饰符修饰
+interface IMyInterface {
+ 	int SomeMethod(int a);
+    string OtherMethod();
+}
+class MyClass : IMyInterface {
+    // 实现接口的方法不使用 override 关键字
+    int SomeMethod(int a) {
+        return a;
+    }
+    string OtherMethod() {
+        return "MyClass";
+    }
+}
+class MyProgram {
+ 	static void Main() {
+     	MyClass mc = new MyClass();
+        int a = mc.SomeMethod(10);
+        IMyInterface imi = (IMyInterface) mc;	// 就像抽象类一样，可以从实现类转换为接口类型
+        string str = imi.OtherMethod();			// 接口调用的方法会引导至具体类的实现。和抽象类一致
+    }
+}
+```
+
+一个类可以实现多个接口（但不能继承多个类）；当实现的多个接口有完全相同的方法时，可以只提供一个实现，也可以为不同接口提供不同的实现（称为显式接口成员实现）：
+
+```csharp
+interface IMyInterface1 {
+    void Method();
+}
+interface IMyInterface2 {
+    void Method();
+}
+class MyClass : IMyInteface1, IMyInterface2 {
+ 	void IMyInterface1.Method() {
+     	// 为 IMyInterface1 实现 Method 方法   
+    }
+    void IMyInterface2.Method() {
+     	// 为 IMyInterface2 实现 Method 方法   
+    }
+    void AnotherMethod() {
+     	((IMyInterface1) this).Method();	// 此时必须转换为接口类型才能调用显式接口成员实现的方法   
+    }
+}
+```
+
+**C++** 并没有接口的概念，但是抽象类（含有纯虚函数的类）可以做到同样的效果（即强制子类实现纯虚函数）；同时，**C++** 原生支持多继承类，因此可以几乎覆盖接口的所有功能。不过，显式接口成员实现并没有 **C#** 这样方便的写法；有两种设计能够实现一样的效果：
+
+```cpp
+class Interface1 {
+public:
+  	virtual void method() = 0;  
+};
+class Interface2 {
+public:
+    virtual void method() = 0;
+};
+class Interface1Impl : public Interface1 {
+public:
+ 	void method() override {
+     	std::cout << "Impl 1";  
+    }
+};
+class Interface2Impl : public Interface2 {
+public:
+ 	void method() override {
+     	std::cout << "Impl 2";
+    }
+};
+class MyClass : public Interface1Impl, public Interface2Impl {
+public:
+ 	void another_method() {
+     	Interface2Impl::method();   // 不需要类型转换也可以调用
+    }
+};
+int main() {
+    MyClass mc;
+    mc.Interface1Impl::method();	// 调用 Interface1Impl 的实现
+    mc.Interface2Impl::method();	// 调用 Interface2Impl 的实现
+    Interface1* i1 = new MyClass();
+    i1->method();					// 调用 Interface1Impl 实现
+    return 0;
+}
+```
+
+或者使用零运行开销的 **CRTP**：
+
+```cpp
+class Interface1 {
+public:
+  	virtual void method() = 0;  
+};
+class Interface2 {
+public:
+    virtual void method() = 0;
+};
+template<class Derived>
+class Interface1Impl : public A {
+public:
+    void method() override {
+        static_cast<Derived*>(this)->method_A();	// 转换为子类只需要 static_cast
+    }
+};
+template<class Derived>
+class Interface2Impl : public B {
+public:
+    void method() override {
+        static_cast<Derived*>(this)->method_B();
+    }
+};
+class MyClass : Interface1Impl<MyClass>, Interface2Impl<MyClass> {
+public:
+    void method_A() {
+     	std::cout << "Impl 1";   
+    }
+    void method_B() {
+        std::cout << "Impl 2";
+    }
+};
+```
+
+**C++** 强大的构造能力不容小觑，但是 **C#** 的语法糖也着实方便。
+
+## 转换
+
+**C#** 使用 **C** 风格的强制类型转换风格，即 `(Type)` 作为类型转换运算符，可以将某个对象转换为另一个类型。对于一些类型间的转换，并不需要显式写出类型转换运算符，我们称这种类型转换为隐式类型转换。内置的数值类型间的转换可以参考下面的准则：
+
+- 整数类型中，位数低的类型可以隐式转换为位数高的类型（比如 `char` 到 `long`），但有符号类型到无符号类型除外
+- 整数类型可以隐式转换为浮点类型
+- 浮点类型中 `float` 可以隐式转换为 `double`
+
+引用类型之间，派生类转换到基类（或者实现的接口）是隐式转换；特别地，所有引用类型都可以隐式转换为 `object` 类型。值类型也可以隐式转换为 `object` 类型（或接口），不过其中要经历内存分配和复制，这个过程我们称为 **装箱（Boxing）**。
+
+```csharp
+class MyProgram {
+    static void Main() {
+    	int i = 10;
+        object oi = i;		// oi 是一个 object 类型的变量，其指向堆上值为 10 的一段内存
+    }
+}
+```
+
+上面我们没有提到的转换，都可以认为是显式转换，其通常有下面的准则：
+
+- 整数类型间，大整数类型转化为小整数类型时，高位会被截掉
+- 浮点数转换为整数时，小数部分会被截掉
+- `double` 转换为 `float` 时，会视精度约化为 `0` 或正负无穷大
+- 一个引用类型只能成功转换为它的派生类（或基类，此时是隐式转换）
+- 一个装箱后的类型可以进行 **拆箱（Unboxing）**，变为值类型。
+
+可以自定义类型转换：
+
+```csharp
+class Person {
+ 	public string name { get; set; }
+    public int age { get; set; }
+    public Person(string name_, int age_) : name(name_), age(age_) {}
+    // 将当前类型隐式转换为其它类型
+    public static implicit operator string(Person p) {
+        return p.name;
+    }
+    // 将当前类型显式转换为其它类型
+    public static explicit operator int(Person p) {
+        return p.age;
+    }
+    // 将其它类型隐式转换为当前类型
+    public static implicit operator Person(string name) {
+     	return new Person(name, 0);   
+    }
+}
+class MyProgram {
+	static void Main() {
+     	Person p = new Person("Tom", 22);
+        string name = p;
+        int age = (int) p;
+        Person newPerson = "Mary";
+    }
+}
+```
+
+需要注意的是，虽然可以自定义类型转换，能够隐式进行转换的最多只能三层，即标准转换、自定义转换、标准转换。超过三步的转换并不能自动进行。
+
+如果需要判断一个类型是否能够转换为另一个类型，可以使用 `is` 运算符，但这个运算符只适用于引用类型间的转换以及装箱拆箱转换，值类型间的转换和用户自定义转换是不行的。
+
+除了强制类型转换运算符外，也可以使用 `as` 运算符。不过转换失败时，`as` 会返回 `null`。
+
+## 范型
+
+**范型（Generic）** 是一种允许同一段代码适应多种类型的机制；范型的代码将类型参数化，在创建类实例时才会代入真实的类型。**C#** 中允许将类、结构、接口、委托和方法定义为范型。
+
+```csharp
+class MyClass<T1, T2> {		// 尖括号中罗列的就是范型参数，它可以根据实例生成不同的类定义
+	public T1 field1;
+    public T2 field2;
+}
+class MyProgram {
+ 	static void Main() {
+        // 创造了 MyClass<int, string> 这个类实例，然后创造了实例对象
+		MyClass<int, string> mc1 = new MyClass<int, string>();
+        var mc2 = new MyClass<float, long>();
+    }
+}
+```
+
+不过，范型类的定义中，并不是所有行为都是被默许的，比如下面这个例子：
+
+```csharp
+class MyClass<T> {
+ 	static public bool LessThan(T t1, T t2) {
+        return t1 < t2;			// 不能编译通过，因为不是所有类型都实现了小于运算符
+    }
+}
+```
+
+所以 **C#** 引入了 **约束（Constraint）** 的概念来规定范型参数需要满足的条件，这是通过 `where` 子句给出的：
+
+```csharp
+class MyClass<T> where T: IComparable {
+    static public bool LessThan(T t1, T t2) {
+        return t1 < t2;			// 现在就没有问题了
+    }
+}
+```
+
+`where` 子句后面可以接三种约束，它们的顺序也有一定的要求：
+
+- 主约束：可以是类名（限定某个类型）、`class` （限制为引用类型） 或 `struct` （限制为值类型）。主约束必须出现在 `where` 子句最前面，且至多只能有一个
+- 次约束：接口，可以有多个
+- 构造函数约束：即 `new()`，要求带有无参 `public` 构造函数的类型
+
+```csharp
+class MyClass<T1, T2>
+    where T1: class, new()	// 第一组约束，有两个约束
+    where T2: IComparable {	// 第二组约束，只有一个约束
+	// 省略实现        
+}
+```
+
+范型方法和范型类语法相似，都是在名称后用尖括号给出范型参数，然后在大括号（方法体）前给出 `where` 子句。不过在调用范型方法时不一定需要给出范型实参，因为可以直接通过参数来推断出范型参数。
+
+```csharp
+class MyProgram {
+ 	void method<T1, T2>(T1 t1, T2 t2) where T1 : IEnumerable {
+        // 省略实现
+    }
+    static void Main() {
+     	int[] arr = { 1, 2, 3 };
+        method(arr, 1.0f);			// 调用了 method<int[], float>
+    }
+}
+```
+
+最后让我们介绍 **C#** 中 **可变性（Variance）** 的概念，其有关于范型委托和范型接口中类型的匹配。
+
+- **协变（Covariance）**：允许在期望传入派生类的模版参数处传入基类对象
+- **逆变（Contravariance）**：允许在期望传入基类的模版参数处传入派生类对象
+- **不变（Invariance）**：其余的情形都是不变
+
+```csharp
+class BaseClass { }
+class DerivedClass : BaseClass { }
+delegate T SimpleDel<T>();
+delegate T CovarianceDel<out T>();
+delegate T ContravarianceDel<in T>();
+class MyClass {
+    static BaseClass BaseMaker() {
+        return new BaseClass();
+    }
+    static DerivedClass DerivedMaker() {
+        return new DerivedClass();
+    }
+    static void Main() {
+        SimpleDel<BaseClass> makeBase = baseMaker;
+        SimpleDel<DerivedClass> makeDerived = derivedMaker;
+        SimpleDel<BaseClass> makeBase_ = derivedMaker;	// 错误，不能讲派生类实例的范型委托转化为基类的范型委托
+        SimpleDel<DerivedClass> makeDerived_ = baseMaker; // 错误，不能将基类实例的范型委托转化为派生类实例的范型委托
+        
+        CovarianceDel<DerivedClass> makeDerived2 = derivedMaker;
+        CovarianceDel<BaseClass> makeBase2 = makeDerived2;
+        
+        ContravarianceDel<BaseClass> makeBase3 = derivedMaker;
+        ContravarianceDel<DerivedClass> makeDerived3 = makeBased3;
+    }
+}
+```
+
+**C++** 中的模版和 **C#** 的范型原理类似，不过在实例化之前，编译器不会对模版代码进行任何检查；对实例化类型的约束在 **C++20** 才得到真正支持（此前只能使用 **SFINAE** 特性或者 `static_assert` 模拟约束，远不如 **C#** 的 `where` 子句方便）。但是 **C++** 模版的表现力非常强，模版参数不仅可以是类型，还可以是模版类型或非类型的常量；模版可以进行偏特化，也即部分实例化，因而针对不同实例类型实现不同行为；加上模版实例化是在编译器进行的，这能极度丰富 **C++** 在编译时的功能。
+
+## 枚举器和迭代器
+
+之前我们介绍了 `foreach` 语句，它能够针对数组类型进行遍历。事实上，所有实现了 `IEnumerable` 接口的类型（称为可枚举类）都能够通过 `foreach` 语句遍历。可枚举类可以通过 `GetEnumerator` 方法返回一个枚举类型（是一个实现了 `IEnumerator` 接口的类型），我们称为枚举器。枚举器有三个核心方法（属性）：
+
+- `Current`：是一个只读属性，返回当前的位置，是一个 `object` 对象的引用
+- `MoveNext`：让枚举器位置移动到下一项，并返回一个布尔值以表明下一项是否是有效位置
+- `Reset`：将枚举器重置到原始状态，初始状态总是第一个元素之前的位置
+
+下面我们通过数组的例子来展示枚举器的使用：
+
+```csharp
+class MyProgram {
+ 	static void Main() {
+     	int[] arr = { 1, 2, 3 };
+        IEnumerator ie = arr.GetEnumerator();
+        while (ie.MoveNext()) {
+         	int item = (int) ie.Current;	// 拆箱操作需要显式类型转换
+            Console.WriteLine($"item = {item}");
+        }
+    }
+}
+```
+
+如果需要自定义类型也能使用 `foreach` 语句，就要实现 `IEnumerable` 接口，通常也要同时实现一个枚举器：
+
+```csharp
+using System;
+using System.Collections;
+
+// 自定义的枚举器
+class ColorEnumerator : IEnumerator {
+    string[] colors;
+    int position = -1;
+    public ColorEnumerator(string[] colors_) {
+     	colors = new string[colors_.Length];
+        for (int i = 0; i < colors_.Length; ++i) {
+            colors[i] = colors_[i];
+        }
+    }
+ 	public object Current {
+        get {
+            if (position == -1 || position >= colors.Length) {
+             	throw new InvalidOperationException();   
+            }
+            return colors[position];
+        }
+    }
+    public bool MoveNext() {
+     	if (position < colors.Length - 1) {
+         	++position;
+            return true;
+        }
+        return false;
+    }
+    public void Reset() {
+        position = -1;
+    }
+}
+// 自定义的可枚举类
+class Spectrum : IEnumerable {
+ 	string[] colors = { "red", "orange", "yellow", "green", "cyan", "blue", "violet" };
+    public IEnumerator GetEnumerator() {
+     	return new ColorEnumerator(colors);   
+    }
+}
+class MyProgram {
+ 	static void Main() {
+     	Spectrum spectrum = new Spectrum();
+        foreach (string color in spectrum) {
+         	Console.WriteLine(color);   
+        }
+    }
+}
+```
+
+也可以使用范型接口 `IEnumerable<T>` 和 `IEnumerator<T>`，这样就不省略了（和 `object` 间的）类型转换了。
+
+**C#** 提供了一个能够简单创建枚举器和枚举类型的方式，是一种被称为 **迭代器（Iterator）** 的结构，其是一个块结构，会作为方法、访问器或运算符的主体出现；其中的代码中可能出现两种特殊语句：`yield return` 语句指定了序列中要返回的下一项，而 `yield break` 语句指定了序列的结束。
+
+```csharp
+class MyClass {
+	public IEnumerator<string> GetEnumerator() {
+        return BlackAndWhite();
+    }   
+    public IEnumerator<string> BlackAndWhite() {	// 迭代器，指定了元素的返回顺序，返回值是一个枚举器
+        yield return "black";
+        yield return "gray";
+        yield return "white";
+    }
+}
+class MyProgram {
+    static void Main() {
+        MyClass mc = new Myclass();
+        foreach (string shade in mc) {
+            Console.WriteLine(shade);
+        }
+    }
+}
+```
+
+也可以让迭代器返回一个可枚举类（比如上例就是 `IEnumerable<string>`）不过此例中没有必要。如果需要用多种方式遍历某个类型，可以这样做：
+
+```csharp
+using System;
+using System.Collections.Generic;	// 迭代器在这里定义
+class Spectrum {
+    string[] colors = { "red", "orange", "yellow", "green", "cyan", "blue", "violet" };
+    public IEnumerable<string> UVtoIR() {
+        for (int i = colors.Length - 1; i >= 0; --i) {
+            yield return colors[i];
+        }
+    }
+    public IEnumerable<string> IRtoUV() {
+        for (int i = 0; i < colors.Length; ++i) {
+            yield return colors[i];
+        }
+    }
+}
+class Program {
+    static void Main() {
+        Spectrum spectrum = new Spectrum();
+        foreach (string color in spectrum.UVtoIR()) {
+            Console.WriteLine($"{color}");
+        }
+        foreach (string color in spectrum.IRtoUV()) {
+            Console.WriteLine($"{color}");
+        }
+    }
+}
+```
+
+上例中的方法可以改成属性，显得更为简洁一些。
+
+最后需要注意的是，迭代器默认实现的枚举器并不包括 `Reset` 方法，如果调用会产生异常。
+
+## LINQ
+
+**LINQ（Language Integrated Query）** 是 **C#** 内置的一个查询语言子集，可以方便地使用类似数据库的语句。
+
+```csharp
+class MyProgram {
+	static void Main() {
+        int[] numbers = { 1, 3, 5, 7, 9 };
+        IEnumerable<int> nums =
+            from n in numbers
+            where n < 10
+            select n;
+        foreach(int x in nums) {
+            Console.WriteLine($"{x}");
+        }
+    }
+}
+```
 
