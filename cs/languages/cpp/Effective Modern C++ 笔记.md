@@ -908,14 +908,14 @@ int main() {
 }
 ```
 
-我们也可以指定智能指针的空间释放规则，这实际上类似于析构函数的作用。它在智能指针生命周期完结时调用。其默认为 `delete` 运算符。
+我们也可以指定智能指针的空间释放规则，这实际上类似于析构函数的作用。它在智能指针生命周期完结时调用。其默认为 `delete` 运算符。此时 `std::unique_ptr` 占用的空间会变大。
 
 ```cpp
 int main() {
     {
-        std::unique_ptr<int> uptr(
-            new int(10), 
-            [] (int* ptr) { delete ptr; std::cout << "Deleter called"; });
+        auto my_deleter = [] (int* ptr) { delete ptr; std::cout << "Deleter called"; };
+        // 这里需要显式给出 deleter 的类型，也即是 lambda 类型
+        std::unique_ptr<int, decltype(my_deleter)> uptr(new int(10), my_deleter);
     }	// 在此 uptr 被析构，上面构造时传入的函数（lambda）会被调用
  	return 0;   
 }
@@ -925,12 +925,13 @@ int main() {
 
 ```cpp
 int main() {
-    auto uptr = std::unique_ptr<int>(10);
+    auto uptr = std::make_unique<int>(10);
+    //
+    auto vptr = std::make_unique<int, void (*)(int*)>(
+        10, [](int* ptr) { delete ptr; std::cout << "Deleter called"; });
  	return 0;   
 }
 ```
-
-
 
 ### 使用 `std::shared_ptr` 管理具备共享所有权的资源
 
