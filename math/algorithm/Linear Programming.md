@@ -535,9 +535,7 @@ $$
 $$
 现在我们可以按照简单形法继续进行化简，但由于所有基本可行解都是 $0$，我们每次引入新的基本变量时无法通过右下角得知是否对目标函数进行了优化，只能不断尝试直到 $-z$ 这行都变为负数。这个过程我们并不知道是否出现原地打转的情况。因此再一次地，我们需要一个 **基准规则** 来保证我们一定能到达最优解。
 
-
-
-## 基准规则
+### 基准规则
 
 正如简单形法的 [规则简述](# 规则简述) 中提到的，在选择进入基的变量，以及出现比值相同的离开基的候选变量时，我们有选择的空间。为了防止我们的选择导致无限循环，需要特定的 **基准规则（Pivoting Rule）** 保证不会出现无限循环：
 
@@ -545,3 +543,295 @@ $$
 - 随机基准规则：每次选择时随机进行。
 - 词典基准规则：为每个方程设置 $\epsilon_1,...,\epsilon_m$ 使得 $1 \gg \epsilon_1 \gg \epsilon_2 \gg ... \gg \epsilon_m > 0$，然后将 $\mathbf{b}$ 全体加上 $[\epsilon_1,....,\epsilon_m]^T$，再继续进行简单形法。此时可以保证不会因为简单形表的退化而出现循环。
 
+我们将详细描述 **词典基准规则（Lexicographic Pivoting Rule）**，其基于一个简单的思考：简单形表变换中出现循环的原因通常是多个基本可行解描述的是同一个点。如果我们对约束右侧加上一系列很小且不同的值，那样就不会出现多条线重合的情形了。让我们以上一节中遇到的问题为例，展示词典基准规则的使用：
+$$
+\begin{align*}
+\underset{x_1, x_2 \in \R}{\text{maximize}} \quad & x_1 + 4x_2 \\
+\text{subject to} \quad & x_1 + x_2 \le \epsilon_1 \\
+& x_1 - 3x_2 \le \epsilon_2 \\
+& -2x_1 + x_2 \le \epsilon_3 \\
+& x_1, x_2 \ge 0
+\end{align*}
+$$
+其可以写为以下的简单形表：
+$$
+\begin{array}{cccccc|c|cccc}
+	& x_1 & x_2 & s_1 & s_2 & s_3 & & 1 & \epsilon_1 & \epsilon_2 & \epsilon_3 \\\hline
+	s_1 & 1 & 1 & 1 & 0 & 0 & \epsilon_1 & 0 & 1 & 0 & 0 \\
+	s_2 & 1 & -3 & 0 & 1 & 0 & \epsilon_2 & 0 & 0 & 1 & 0 \\
+	s_3 & -2 & 1 & 0 & 0 & 1 & \epsilon_3 & 0 & 0 & 0 & 1 \\\hline
+	-z & 1 & 4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+\end{array}\nonumber
+$$
+这里可以选择有最大 **差额成本（Reduced Cost）** 的 $x_2$ 进入基，然后由于 $\epsilon_3 < \epsilon_1$，我们选择 $s_3$ 退出：
+$$
+\begin{array}{cccccc|c|cccc}
+	& x_1 & x_2 & s_1 & s_2 & s_3 & & 1 & \epsilon_1 & \epsilon_2 & \epsilon_3 \\\hline
+	s_1 & 3 & 0 & 1 & 0 & -1 & \epsilon_1 - \epsilon_3 & 0 & 1 & 0 & -1 \\
+	s_2 & -5 & 0 & 0 & 1 & 3 & \epsilon_2 + 3\epsilon_3 & 0 & 0 & 1 & 3 \\
+	x_2 & -2 & 1 & 0 & 0 & 1 & \epsilon_3 & 0 & 0 & 0 & 1 \\\hline
+	-z & 9 & 0 & 0 & 0 & -4 & -4\epsilon_3 & 0 & 0 & 0 & -4
+\end{array}\nonumber
+$$
+引入 $x_1$ 并让 $s_1$ 退出：
+$$
+\begin{array}{cccccc|c|cccc}
+	& x_1 & x_2 & s_1 & s_2 & s_3 & & 1 & \epsilon_1 & \epsilon_2 & \epsilon_3 \\\hline
+	x_1 & 1 & 0 & 1/3 & 0 & -1/3 & \epsilon_1/3 - \epsilon_3/3 & 0 & 1/3 & 0 & -1/3 \\
+	s_2 & 0 & 0 & 5/3 & 1 & 4/3 & 5\epsilon_2/3 + \epsilon_2 + 4\epsilon_3/3 & 0 & 5/3 & 1 & 4/3 \\
+	x_2 & 0 & 1 & 2/3 & 0 & 1/3 & 2\epsilon_1/3  + \epsilon_3/3 & 0 & 2/3 & 0 & 1/3 \\\hline
+	-z & 0 & 0 & -3 & 0 & -1 & -3\epsilon_1 - \epsilon_3 & 0 & -3 & 0 & -1
+\end{array}\nonumber
+$$
+至此所有的差额成本都为非正数了，我们得到了最优解 $(0, 0, 0)$，此时目标函数为 $0$。
+
+细心的同学可能会发现，每次操作时，$\epsilon_i$ 的系数总是和 $s_i$ 的系数一致，因此存在松弛变量的情况下我们只需要按照它们的系数来判断即可。即使是没有松弛变量的方程，我们也可以对一开始的基本变量所在列作出标记 $C_1,...,C_k$，然后每次判断离开的基本变量出现选择时，选择 $C_1$ 列最小的，不然顺次比较 $C_2$、$C_3$…… 这和使用 $\epsilon_i$ 是完全等价的。
+
+## 矩阵法
+
+### 基本可行解
+
+现在让我们用矩阵构建更为严格的线性优化问题算法。考虑一个等式形式的线性优化问题：
+$$
+\begin{align}
+\begin{split}
+	\underset{\mathbf{x} \in \R^n}{\text{maximize}} \quad & \mathbf{c}^T\mathbf{x} \\
+	\text{subject to} \quad & A\mathbf{x} = \mathbf{b} \\
+	& \mathbf{x} \ge \mathbf{0}
+\end{split}
+\end{align}
+$$
+此处 $A$ 是一个 $m\times n$ 的矩阵，$\mathbf{c} \in \R^n, \mathbf{b} \in \R^m$。为了方便讨论，我们假设 $A$ 中的各行是线性无关的。下面让我们来正式地定义 **基本可行解** ：从 $A$ 中选取不重复且按顺序排列的某 $m$ 列序号记为 $\mathcal{B}$，其代表我们将选取的基本变量的序号。其余的 $n - m$ 个序号按顺序排列记为 $\mathcal{N}$。定义 $\mathbf{x}_\mathcal{B} = (x_{k_1}, x_{k_2},..., x_{k_m})$，其中 $k_1, k_2,..., k_m \in \mathcal{B}$ 且 $k_1 < k_2 <. ..< k_m$。类似地我们可以定义 $\mathbf{x}_\mathcal{N}$。这样我们就可以将目标函数写为：
+$$
+\mathbf{c}^T\mathbf{x} = \mathbf{c}_\mathcal{B}^T\mathbf{x}_\mathcal{B} + \mathbf{c}_\mathcal{N}^T\mathbf{x}_\mathcal{N}
+$$
+而约束条件也可以写为：
+$$
+A_\mathcal{B}\mathbf{x}_\mathcal{B} + A_\mathcal{N}\mathbf{x}_\mathcal{N} = \mathbf{b}
+$$
+为了得到基本可行解，我们需要 $A_\mathcal{B}$ 是可逆的，此时设 $\mathbf{x}_\mathcal{N} = 0$，我们就有 $\mathbf{x}_\mathcal{B} = A_\mathcal{B}^{-1}\mathbf{b}$。如果此时同时有 $\mathbf{x}_\mathcal{B} \ge \mathbf{0}$，我们就称其是一个基本可行解。
+
+此外，让我们再定义 $\R^n$ 子集的 **顶点（Vertex）** 与 **极值点（Extreme Point）** 的概念。对于 $S \subseteq \R^n$，顶点是指令某个线性函数 $\boldsymbol{\alpha}^T\mathbf{x}$ 严达到格最小值的点 $\mathbf{y} \in S$。极值点则是指在不在任意两个点 $\mathbf{x}, \mathbf{y} \in S$ 之间的点 $\mathbf{z} \in S$。最后，定义 **可行域** $F = \{x \in \R^n \mid A\mathbf{x} = \mathbf{b}\}$。现在我们要证明在可行域中，基本可行解、顶点与极值点是等价的：
+
+> **命题**：任何基本可行解都是可行域的一个顶点。
+
+> **证明**：首先任意选择一个基本可行解及其对应的 $\mathcal{B}, \mathcal{N}$。设 $\alpha_i = \begin{cases}1\quad i \in \mathcal{N} \\ 0 \quad i \in \mathcal{B}\end{cases}$，则 $\boldsymbol{\alpha}^T\mathbf{x}$ 就是所有非基本变量的和。显然当且仅当 $\mathbf{x}_\mathcal{N} = \mathbf{0}$ 时才有最小值 $\mathbf{0}$，因此基本可行解对应了可行域的一个顶点。
+
+> **命题**：$S \subseteq \R^n$ 的顶点同时也是它的极值点。
+
+> **证明**：设 $\mathbf{x} \in S$ 是 $S$ 的一个顶点，$\boldsymbol{\alpha}$ 是令 $\boldsymbol{\alpha}^T\mathbf{x} < \boldsymbol{\alpha}^T\mathbf{y}$ 对任意 $\mathbf{y} \ne \mathbf{x} \in S$ 成立的向量。假设 $\mathbf{x}$ 并不是极值点，则存在 $\mathbf{y}, \mathbf{y}'$ 使得 $\mathbf{x} = t\mathbf{y} + (1-t)\mathbf{y}'$。此时有：
+> $$
+> \begin{equation*}
+> 	\boldsymbol{\alpha}^T\mathbf{x} = t\boldsymbol{\alpha}^T\mathbf{y} + (1-t)\boldsymbol{\alpha}^T\mathbf{y}' < t\boldsymbol{\alpha}^T\mathbf{x} + (1-t)\boldsymbol{\alpha}^T\mathbf{x} = \boldsymbol{\alpha}^T\mathbf{x}
+> \end{equation*}
+> $$
+> 矛盾！因此 $\mathbf{x}$ 必然是一个极值点。
+
+> **命题**：任何可行域的极值点都是它的一个基本可行解。
+
+> **证明**：暂略。
+
+### 行运算
+
+我们在介绍简单形法时没有介绍行运算，这里详细讲一下。行运算包括下面三种：
+
+- 将某一行乘以任一个非零的数。
+- 将某一行乘以任一个数并加到另一行上。
+- 交换两行。
+
+矩阵的行运算不会改变其对应的线性方程组的解，因此非常有用。实际上，我们可以将行运算视为一个 **线性变换（Linear Transformation）**，对 $A\mathbf{x} = \mathbf{b}$ 的行变换可以写为 $(EA)\mathbf{x} = E\mathbf{b}$ 的形式，其中 $E$ 是一个 **基本矩阵（Elementary Matrix）**，即和单位矩阵只差一次行运算的矩阵。这样，我们就可以将经过一系列行运算的等式写作 $MA\mathbf{x} = M\mathbf{b}$ 的形式。实际上 $M = A_\mathcal{B}^{-1}$，这是因为 $(MA)_\mathcal{B} = I$。因此对于方程 (6)，我们可以找到它的解：
+$$
+\mathbf{x}_\mathcal{B} = A_\mathcal{B}^{-1}\mathbf{b} - A_\mathcal{B}^{-1}A_\mathcal{N}\mathbf{x}_\mathcal{N}
+$$
+当令 $\mathbf{x}_\mathcal{N} = \mathbf{0}$ 时我们就得到了 $\mathbf{x}_\mathcal{B} = A_\mathcal{B}^{-1}\mathbf{b}$。这个结论在线性代数中应该已经讨论过，这里只是进行重温。
+
+### 简单形表的公式
+
+现在让我们把上面的一些结论代入到简单形表中。对于 (4) 描述的线性优化问题，我们在简单形法中每次选择 $\mathcal{B}$ 时要确保：
+
+- $A_\mathcal{B}$ 是可逆的，此时令 $\mathbf{x}_\mathcal{N} = 0$，我们就得到了一个基本解 $\mathbf{x}_\mathcal{B} = A_\mathcal{B}^{-1}\mathbf{b}$。
+- $\mathbf{x}_\mathcal{B} \ge \mathbf{0}$，此时这个基本解就是可行的。
+
+简单形表的模式如下：
+$$
+\begin{array}{cccccc|c}
+	& & \mathbf{x}_\mathcal{B} & & \mathbf{x}_\mathcal{N} & & \\\hline
+	\\
+	\mathbf{x}_\mathcal{B} & & I & & Q & & \mathbf{p} \\
+	\\\hline
+	-z & & \mathbf{0}^T & & \mathbf{r}^T & & -z_0
+\end{array}
+$$
+这里 $Q$ 是一个矩阵，而 $\mathbf{p}, \mathbf{r}$ 是两个向量。需要注意的是我们要求表的左上角是单位矩阵 $I$，因此可能需要列之间的交换。下面举一个例子说明：
+$$
+\begin{align*}
+\underset{x, y \in \R}{\text{maximize}} \quad & 2x + 3y \\
+\text{subject to} \quad & -x + y + s_1 = 3 \\
+& x - 2y + s_2 = 2 \\
+& x + y + s_3 = 7 \\
+& x, y, s_1, s_2, s_3 \ge 0
+\end{align*}
+$$
+让我们把它写成 (8) 式的形式：
+$$
+\begin{array}{cccccc|c}
+	& y & s_2 & x & s_1 & s_3 & \\\hline
+	y & 1 & 0 & 0 & 1/2 & 1/2 & 5 \\
+	s_2 & 0 & 1 & 0 & 3/2 & 1/2 & 10 \\
+	x & 0 & 0 & 1 & -1/2 & 1/2 & 2 \\\hline
+	-z & 0 & 0 & 0 & -1/2 & -5/2 & -19
+\end{array}\nonumber
+$$
+如果使用上表的顺序重写最一开始的方程，应该是下面这样的：
+$$
+\begin{array}{cccccc|c}
+	& y & s_2 & x & s_1 & s_3 & \\\hline
+	s_1 & 1 & 0 & -1 & 1 & 0 & 3 \\
+	s_2 & -2 & 1 & 1 & 0 & 0 & 2 \\
+	s_3 & 1 & 0 & 1 & 0 & 1 & 7 \\\hline
+	-z & 3 & 0 & 2 & 0 & 0 & 0
+\end{array}\nonumber
+$$
+我们的目标是通过这个表尝试得出基为 $(y, s_2, x)$ 的新表中的 $\mathbf{p}, Q, \mathbf{r}, z_0$ 这些新数据。目前已知的是我们选取的基 $\mathcal{B}$ 满足：
+$$
+A_\mathcal{B} = \begin{bmatrix}
+	1 & 0 & -1 \\
+	-2 & 1 & 1 \\
+	1 & 0 & 1
+\end{bmatrix}\nonumber
+$$
+首先让我们看看 $\mathbf{p}$。它存储的是经过行运算后得到的新基本可行解。因此不难猜测有：
+$$
+A_\mathcal{B}^{-1}\mathbf{b} = \begin{bmatrix}
+	1 & 0 & -1 \\
+	-2 & 1 & 1 \\
+	1 & 0 & 1
+\end{bmatrix} \begin{bmatrix}
+	3 \\ 2 \\ 7
+\end{bmatrix}
+= \begin{bmatrix}
+	5 \\ 10 \\ 2
+\end{bmatrix}
+= \mathbf{p}
+$$
+然后 $A_\mathcal{N}$ 在等式左侧其实经历了和 $\mathbf{b}$ 相同的运算过程，因此也有：
+$$
+A_\mathcal{B}^{-1}A_\mathcal{N} = \begin{bmatrix}
+	1 & 0 & -1 \\
+	-2 & 1 & 1 \\
+	1 & 0 & 1
+\end{bmatrix} \begin{bmatrix}
+	1 & 0 \\
+	0 & 0 \\
+	0 & 1
+\end{bmatrix}
+= \begin{bmatrix}
+	1/2 & 1/2 \\
+	3/2 & 1/2 \\
+	-1/2 & 1/2
+\end{bmatrix}
+= Q
+$$
+目标函数 $z_0$ 也比较直白，由于我们定义了 $z = \mathbf{c}^T\mathbf{x} = \mathbf{c}_\mathcal{B}^T\mathbf{x}_\mathcal{B} + \mathbf{c}_\mathcal{N}^T\mathbf{x}_\mathcal{N}$，且此时 $\mathbf{x}_\mathcal{B} = A_\mathcal{B}^{-1}\mathbf{b}$ 。最后让我们尝试得到 $\mathbf{r}$。实际上我们可以完全让 $-z$ 行保持不变，然后得到 $I$ 与 $Q$ 后（它们实际上合起来是 $A_\mathcal{B}^{-1}A$），为了让基本变量所在的列能够被清空，我们需要从 $\mathbf{c}^T$ 中减去 $\mathbf{c}_\mathcal{B}^TA_\mathcal{B}^{-1}A$，其过程如下：
+$$
+\mathbf{c}_\mathcal{B}^TA_\mathcal{B}^{-1}A = 
+\begin{bmatrix}
+	3 & 0 & 2
+\end{bmatrix}
+\begin{bmatrix}
+	1 & 0 & 0 & 1/2 & 1/2 \\
+	0 & 1 & 0 & 3/2 & 1/2 \\
+	0 & 0 & 1 & -1/2 & 1/2
+\end{bmatrix}
+= \begin{bmatrix}
+	3 & 0 & 2 & 1/2 & 5/2
+\end{bmatrix} \\
+\mathbf{c}^T - \mathbf{c}_\mathcal{B}^TA_\mathcal{B}^{-1}A =
+\begin{bmatrix}
+	0 & 0 & 0 & -1/2 & -5/2
+\end{bmatrix}
+$$
+只要取它序数为 $\mathcal{N}$ 中的项，就得到了 $\mathbf{r}^T$。
+
+最后我们总结如下：
+
+- $\mathbf{p} = A_\mathcal{B}^{-1}\mathbf{b}$
+- $Q = A_\mathcal{B}^{-1}A_\mathcal{N}$
+- $\mathbf{r}^T = \mathbf{c}_\mathcal{N}^T - \mathbf{c}_\mathcal{B}^TA_\mathcal{B}^{-1}A_\mathcal{N}$
+- $z_0 = \mathbf{c}_\mathcal{B}^TA_\mathcal{B}^{-1}\mathbf{b}$ 
+
+### 修改后的简单形法
+
+通过上面这些公式的启发，我们意识到并不需要计算矩阵中的每一项，
+
+现举例说明：
+$$
+\begin{align*}
+	\underset{x_1, x_2, x_3, x_4 \in \R}{\text{maximize}}\quad & x_1 + x_2 + x_3 + 2x_4 \\
+	\text{subject to} \quad & 3x_1 - x_2 + 4x_3 - x_4 \le 4 \\
+	& 2x_2 + x_4 \le 5 \\
+	& x_1, x_2, x_3, x_4 \ge 0
+\end{align*}
+$$
+引入松弛变量后，我们可以写出如下的简单形表：
+$$
+\begin{array}{ccccccc|c}
+	& x_1 & x_2 & x_3 & x_4 & s_1 & s_2 & \\\hline
+	s_1 & 3 & -1 & 4 & -1 & 1 & 0 & 4 \\
+	s_2 & 0 & 1 & 0 & 1 & 0 & 1 & 5 \\\hline
+	-z & 1 & 1 & 1 & 2 & 0 & 0 & 0
+\end{array}\nonumber
+$$
+令 $\mathcal{B} = (s_1, s_2)$。此时易知 $A_\mathcal{B}^{-1} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}$，$\mathbf{p} = \begin{bmatrix} 4 \\ 5 \end{bmatrix}$。依此我们可以得到 $\mathbf{u}^T = \mathbf{c}_\mathcal{B}^TA_\mathcal{B}^{-1} = \begin{bmatrix} 0 & 0 \end{bmatrix}$。简单形表的核心信息如下：
+$$
+\begin{array}{ccc|c}
+	\mathcal{B} & A_\mathcal{B}^{-1} & x_1 & \mathbf{p} \\\hline
+	s_1 & 1\quad 0 & 3 & 4 \\
+	s_2 & 0\quad 1 & 0 & 5
+\end{array}\nonumber
+\quad\leadsto\quad
+\begin{array}{ccc|c}
+	\mathcal{B} & A_\mathcal{B}^{-1} & x_1 & \mathbf{p} \\\hline
+	x_1 & 1/3\quad 0 & 1 & 4/3 \\
+	s_2 & 0\quad 1 & 0 & 5
+\end{array}\nonumber
+$$
+我们在上面的变换中选择让 $x_3$ 进入基，$s_1$ 离开。随后我们得到 $\mathbf{u}^T = \mathbf{c}_\mathcal{B}^TA_\mathcal{B}^{-1} = \begin{bmatrix} 1 & 0 \end{bmatrix} \begin{bmatrix} 1/3 & 0 \\ 0 & 1 \end{bmatrix} = \begin{bmatrix} 1/3 & 0 \end{bmatrix}$。计算得到 $x_2$ 的差额成本为：$1 - \begin{bmatrix} 1/3 & 0 \end{bmatrix}\begin{bmatrix} -1 \\ 2 \end{bmatrix} = \frac{4}{3} > 0$。因此 $x_2$ 可以进入基。经过计算可以得到 $Q_{x_2} = A_\mathcal{B}^{-1}A_{x_2} = \begin{bmatrix} 1/3 & 0 \\ 0 & 1 \end{bmatrix}\begin{bmatrix} -1 \\ 2 \end{bmatrix} = \begin{bmatrix} -1/3 \\ 2 \end{bmatrix}$。现在简单形表为：
+$$
+\begin{array}{ccc|c}
+	\mathcal{B} & A_\mathcal{B}^{-1} & x_2 & \mathbf{p} \\\hline
+	x_1 & 1/3\quad 0 & -1/3 & 4/3 \\
+	s_2 & 0\quad 1 & 2 & 5
+\end{array}\nonumber
+\quad\leadsto\quad
+\begin{array}{ccc|c}
+	\mathcal{B} & A_\mathcal{B}^{-1} & x_2 & \mathbf{p} \\\hline
+	x_1 & 1/3\quad 1/6 & 0 & 13/6 \\
+	x_2 & 0\quad 1/2 & 1 & 5/2
+\end{array}
+$$
+在此计算 $\mathbf{u}^T = \mathbf{c}_\mathcal{B}^TA_\mathcal{B}^{-1} = \begin{bmatrix} 1 & 1 \end{bmatrix}\begin{bmatrix} 1/3 & 1/6 \\ 0 & 1/2 \end{bmatrix} = \begin{bmatrix} 1/3 & 2/3 \end{bmatrix}$。接下来通过 $r_j = c_j - \mathbf{u}^TA_j$ 来寻找合适的新的基本变量。$x_3$ 的差额成本为：$1 - \begin{bmatrix} 1/3 & 2/3 \end{bmatrix}\begin{bmatrix} 4 \\ 0 \end{bmatrix} = -\frac{1}{3} < 0$，因此并不合适。$x_4$ 的差额成本为：$2 - \begin{bmatrix} 1/3 & 2/3 \end{bmatrix}\begin{bmatrix} -1 \\ 1 \end{bmatrix} = \frac{5}{3} > 0$，因此 $x_4$ 可以进入基。计算得到 $Q_{x_4} = A_\mathcal{B}^{-1}A_{x_4} = \begin{bmatrix} 1/3 & 1/6 \\ 0 & 1/2 \end{bmatrix}\begin{bmatrix} -1 \\ 1 \end{bmatrix} = \begin{bmatrix} -1/6 \\ 1/2 \end{bmatrix}$。简单形表如下：
+$$
+\begin{array}{ccc|c}
+	\mathcal{B} & A_\mathcal{B}^{-1} & x_2 & \mathbf{p} \\\hline
+	x_1 & 1/3\quad 1/6 & -1/6 & 13/6 \\
+	x_2 & 0\quad 1/2 & 1/2 & 5/2
+\end{array}
+\quad\leadsto\quad
+\begin{array}{ccc|c}
+	\mathcal{B} & A_\mathcal{B}^{-1} & x_2 & \mathbf{p} \\\hline
+	x_1 & 1/3\quad 1/3 & 0 & 3 \\
+	x_4 & 0\quad 1 & 1 & 5
+\end{array}\nonumber
+$$
+$\mathbf{u}^T = \mathbf{c}_\mathcal{B}^TA_\mathcal{B}^{-1} = \begin{bmatrix} 1 & 2 \end{bmatrix} \begin{bmatrix} 1/3 & 1/3 \\ 0 & 1 \end{bmatrix} = \begin{bmatrix} 1/3 & 7/3 \end{bmatrix}$。似乎我们已经走完了所有变量，检查一下差额成本：
+$$
+\begin{align*}
+\mathbf{r}^T &= \mathbf{c}_\mathcal{N}^T - \mathbf{u}^TA_\mathcal{N} \\
+&= \begin{bmatrix} 1 & 1 & 0 & 0 \end{bmatrix} - 
+\begin{bmatrix} 1/3 & 7/3 \end{bmatrix}
+\begin{bmatrix} -1 & 4 & 1 & 0 \\ 2 & 0 & 0 & 1 \end{bmatrix} \\
+&= \begin{bmatrix} -10/3 & -1/3 & -1/3 & -7/3 \end{bmatrix}
+\end{align*}
+$$
+差额成本都是负数，因此我们已经得到了最优解 $(3, 0, 0, 5)$。

@@ -262,3 +262,7 @@ $$
 $$
 \Delta x\Delta p \ge \frac{\hbar}{2}
 $$
+
+### 特征状态
+
+我们将

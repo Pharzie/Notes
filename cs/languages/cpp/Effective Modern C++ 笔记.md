@@ -935,7 +935,107 @@ int main() {
 
 ### 使用 `std::shared_ptr` 管理具备共享所有权的资源
 
+`std::unique_ptr` 很好用，但是所有的资源都是独占的。我们希望能够设计一种既能对多个变量开放资源权限，且同时能够在资源不需要时自动回收的模型。这就是 `std::shared_ptr`，所有共享资源的变量同时持有指向资源的指针以及指向引用计数的指针。每当有新的变量加入时，引用计数会加一；反之当变量被析构时，引用计数会减一。引用计数归零则代表这个资源不再被任何变量拥有，随后可以放心释放它。`std::shared_ptr` 在复制赋值运算时，会减少等号左侧智能指针的引用计数，然后将右侧智能指针的引用计数加一，并共享资源给左侧的指针；如果是移动赋值，右侧指针的引用计数则 *不会* 加一。这种顺滑的设计使得我们可能会认为，`std::shared_ptr` 可以完全代替裸指针的使用场景了。其实不然，看看下面列出的问题：
+
+- `std::shared_ptr` 大小是裸指针的两倍。这是因为它不仅存储了指向资源的指针，还有一个指向引用计数的指针。这对一些对存储空间敏感的场景是致命的 debuff。
+- 引用计数必须动态分配。因为没有任何一个 `std::shared_ptr` 变量需要为引用计数负责，它一定会在堆上被初始化。额外的动态分配会造成性能损失。
+- 引用计数的增减必须是原子操作。在并发场景下，不同线程中对引用计数的同时访问可能会导致意料外的资源析构。然而原子操作一般会慢于非原子操作。
+
+和 `std::unique_ptr` 类似，我们可以显式给出 `std::shared_ptr` 资源释放的规则。不过与前者微妙的不同是，`std::shared_ptr` 并不将这个释放函数的类型视为模版参数，因此指向同一资源的不同智能指针可以拥有不同的释放逻辑。下面是一个例子：
+
+```cpp
+auto my_del = [](int* p) { do_something(p); delete p; };
+std::unique_ptr<int, decltype(my_del)> upi(new int, my_del);
+std::shared_ptr<int> spi_1(new int, my_del);	// 使用自定义的释放器
+std::shared_ptr<int> spi_2(new int);			// 使用默认的释放器
+std::vector<std::shared_ptr<int>> vspi = { spi_1, spi_2 };	// spi_1 和 spi_2 类型相同因此可以放在同一个容器中
+```
+
+此外，`std::shared_ptr` 中的资源释放器 *不会* 额外增加智能指针本身的存储占用 （`sizeof(std::shared_ptr<T>)` 总是 `2 * sizeof(T*)`），但会占用堆上的内存空间。这里让我们深入讲一下。此前我们所说的指向引用计数的指针，其实并不准确。在实现中指向的是一个堆上的控制块：
+
+```cpp
+namespace std {
+
+template<typename T>
+class shared_ptr {
+public:
+    shared_ptr(T* ptr);
+    template<typename Del>
+    shared_ptr(T* ptr, Del del);
+    shared_ptr(shared_ptr<T> const& other);
+private:
+    struct control_block {
+        size_t count;
+        object deleter;		// 资源释放器经过了类型擦除，具体可能有很多手段
+        // 其它信息
+    };
+    T* m_data; 
+    control_block* m_control;
+};
+    
+}
+```
+
+当我们使用裸指针构造 `std::shared_ptr` 时，会创建一个控制块，但并不会深拷贝这个裸指针：
+
+```cpp
+template<typename T>
+std::shared_ptr<T>::shared_ptr(T* ptr) : m_data(ptr) {
+    m_control = new control_block{ 0, Object([](T* p) { delete p; }) };
+}
+```
+
+如果直接复制一个 `std::shared_ptr`，则不会创建新的控制块：
+
+```cpp
+template<typename T>
+std::shared_ptr<T>::shared_ptr(std::shared_ptr<T> const& sp) 
+    : m_data(sp.m_data), m_control(sp.m_control) {}
+```
+
+从 `std::unique_ptr` 复制到 `std::shared_ptr` 时，会将指针移动过来，创建一个控制块，并置空 `std::unique_ptr`：
+
+```cpp
+template<typename T, typename Del>
+std::shared_ptr<T>::shared_ptr(std::unique_ptr<T, Del>&& up)
+    : m_data(std::move(up.get())) {
+    m_control = new control_block{ 0, Object(std::move(up.get_deleter())) };        
+}
+```
+
+由于使用裸指针初始化智能指针并不会进行深拷贝，我们建议在初始化 `std::shared_ptr` 对象时直接使用 `new` 语句，而不是传入一个指针：
+
+```cpp
+int main() {
+    auto p = new int;
+    std::shared_ptr<int> spi_1(p);
+    std::shared_ptr<int> spi_2(p);		// 危险！p 同时被两个控制块操控，会被释放两次。
+    std::shared_ptr<int> spi_3(new int);
+    std::shared_ptr<int> spi_3(new int);// 直接代入 new 表达式则不会有问题。
+    return 0;
+}
+```
+
+和上面类似的情形是利用 `this` 指针构建 `std::shared_ptr`，同样地，`this` 会在智能指针生命周期结束时析构 `this` 指向的对象，造成内存问题。为了解决 `this` 指针构建智能指针的问题，可以使用标准库中的模版 `std::enable_shared_from_this`：
+
+```cpp
+class MyClass : public std::enable_shared_from_this<MyClass> {
+public:
+    void foo() {
+     	v.emplace_back(std::shared_from_this());	// 相当于利用 this 构建了一个智能指针。   
+    }
+private:
+    std::vector<std::shared_ptr<MyClass>> v;
+}
+```
+
+总之，`std::shared_ptr` 利用了控制块来管理资源，其中可能包含复杂的实现（如虚函数，这会带来一定成本）。不过，在不显示指定资源释放器时，这个成本并不明显。建议在设计时仔细考虑是否需要共享资源，如果可能并不需要，`std::unique_ptr` 能够提供更接近裸指针的效率，且可以随时转换为 `std::shared_ptr`。不过一旦定义了 `std::shared_ptr` 对象，就不能再变为 `std::unique_ptr` 了。
+
+最后，在 **C++17** 之前，`std::shared_ptr<T[]>` 并未被支持，但从 `std::unique_ptr<T[]>` 到 `std::shared_ptr<T>` 的转换并未被编译器认知为错误，在一些情况下会发生错误，比如将 `std::shared_ptr<Derived>` 转换为 `std::shared_ptr<Base>` 在资源实际上是一个数组时（`Derived[]`）是危险的行为。**C++17** 之后提供了对 `std::shared_ptr<T[]>` 的支持，同时也禁止了 `std::unique_ptr<T[]>` 到 `std::shared_ptr<T>` 类型的转换。此处的建议是在 **C++17** 前避免使用 `std::shared_ptr` 管理数组。
+
 ### 对于类似 `std::shared_ptr` 但有可能空悬的指针使用 `std::weak_ptr`
+
+
 
 ### 优先选用 `std::make_unique` 和  `std::make_shared`，而非直接使用 `new`
 
