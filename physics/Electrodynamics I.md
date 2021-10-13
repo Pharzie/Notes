@@ -1,8 +1,14 @@
 # Electrodynamics I
 
-本笔记是对应 *UIUC PHYS 435 Advanced Electromagnetism I* 的学习笔记，其中包括了矢量微积分、偏微分方程、静电学、静磁学相关的知识点。
+本笔记是对应 *UIUC PHYS 435 Electromagnetic Fields I* 的学习笔记，其中包括了矢量微积分、偏微分方程、静电学、静磁学相关的知识点。由于本篇是物理笔记，其中的数学定理并不一定提供证明，即使有证明也不一定是严格的。主要参考了 *Introduction to Electrodynamics, 4th Edition: David J. Griffiths*，文中大量的例题、图片都来自该教材，章节的编排也基本按照这本书的设计。
 
 [TOC]
+
+$$
+\newcommand{\marginbox}[1]{\fbox{$\hphantom{1} {#1} \vphantom{1\over1} \hphantom{1}$}}\nonumber
+$$
+
+
 
 **电动力学（Electrodynamics）** 研究的核心问题就是已知一系列 **源电荷（Source Charge）**，它们对另一个 **测试电荷（Test Charge）** 的作用是怎么样的。其中源电荷和测试电荷的初始状态（位置，速度）给定时，我们需要尝试计算出测试电荷的运动轨迹。这个问题可以通过 **叠加原理（Principle of Superposition）** 显著简化：由于电磁力和电荷的电量成线性比例，我们可以将一个个源电荷孤立出来处理。如果源电荷 $q_i$ 对测试电荷 $Q$ 的力为 $\mathbf{F}_i$，则所有源电荷都存在的情况下 $Q$ 受到的力就是 $\sum \mathbf{F}_i$。实验表明，一个源电荷 $q$ 对测试电荷 $Q$ 的电磁力通常与它们的电量、速度、 $q$ 的加速度以及两者的距离 $\mathscr{r}$ 相关。由于两者可能都在运动，考虑所有因素的分析会异常复杂。所以，我们将一步步构建电动力学中影响作用力的因素，从简单的问题中理解电磁场的性质。
 
@@ -28,7 +34,7 @@
 
 矢量的 **点乘（Dot Product）** 描述了两个矢量在同一方向共同的作用效果，大小为两个矢量大小之积乘以它们夹角的余弦，即：
 $$
-\mathbf{A}\cdot\mathbf{B} = AB\cos{\theta}
+\marginbox{\mathbf{A}\cdot \mathbf{B} = AB\cos\theta}
 $$
 可以参考下图：
 
@@ -40,7 +46,7 @@ c^2 = \mathbf{c}\cdot\mathbf{c} = (\mathbf{a} - \mathbf{b})\cdot(\mathbf{a} - \m
 $$
 矢量的 **叉乘（Cross Product）** 定义为垂直于两个矢量所在平面的矢量，大小为两个矢量大小之积乘以它们夹角的正弦，方向则满足 **右手定则（Right-Hand Rule）**：
 $$
-\mathbf{A}\times\mathbf{B} = AB\sin\theta\hat{\mathbf{n}}
+\marginbox{\mathbf{A}\times\mathbf{B} = AB\sin\theta\hat{\mathbf{n}}}
 $$
 其中 $\hat{\mathbf{n}}$ 是满足右手定则的法向量，该定则描述如下：将四指指向第一个矢量的方向，大拇指处于同一平面并垂直于它们，然后使得四指能通过较小角度转到第二个矢量的方向时，大拇指的方向就是 $\hat{\mathbf{n}}$ 的方向。为了更好说明这个方向，我们以笛卡尔坐标系为例：
 
@@ -124,7 +130,7 @@ dT = \left(\frac{\partial T}{dx}\hat{\mathbf{x}} + \frac{\partial T}{dx}\hat{\ma
 $$
  $\nabla$ 是引入的新记号，我们称其为 **Del 算子（Del Operator）**，其定义如下：
 $$
-\nabla = \hat{\mathbf{x}}\frac{\partial}{\partial x} + \hat{\mathbf{y}}\frac{\partial}{\partial y} + \hat{\mathbf{z}}\frac{\partial}{\partial z}
+\marginbox{\nabla = \hat{\mathbf{x}}\frac{\partial}{\partial x} + \hat{\mathbf{y}}\frac{\partial}{\partial y} + \hat{\mathbf{z}}\frac{\partial}{\partial z}}
 $$
 可以看到 del 算子和微分算子 $\frac{d}{dx}$ 非常相似。后文中我们将利用 del 算子重新建立微积分中的一些定理，可以时常将其和微分算子对比。
 
@@ -142,7 +148,7 @@ $$
 $$
 散度的几何意义是某点上一个向量函数的发散程度。我们不加证明地给出其等价的定义：
 $$
-\nabla\cdot\mathbf{v} = \lim_{V\to 0}\frac{1}{|V|}\oint_{S(V)}\mathbf{v}\cdot\hat{\mathbf{n}}\,dS
+\marginbox{\nabla\cdot\mathbf{v} = \lim_{V\to 0}\frac{1}{|V|}\oint_{S(V)}\mathbf{v}\cdot\hat{\mathbf{n}}\,dS}
 $$
 也即一个闭合曲面中矢量场的通量（穿过该曲面的积分）与闭合曲面形成体积 $V$ 之比在 $V\to 0$ 的极限。在静电场的章节中我们会再一次看到类似的定义。
 
@@ -221,7 +227,7 @@ $$
 $$
 我们经常将上面式子简写为 $\nabla^2 T$，其中 $\nabla^2$ 是一个新定义的算子，称为 **拉普拉斯算子（Laplacian Operator）**：
 $$
-\nabla^2 = \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} + \frac{\partial^2}{\partial z^2}
+\marginbox{\nabla^2 = \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2} + \frac{\partial^2}{\partial z^2}}
 $$
 偶尔我们也会对矢量使用拉普拉斯算子，此时它代表对矢量的不同分量分别进行不同方向的求拉普拉斯：
 $$
@@ -265,7 +271,6 @@ $$
   \oint \mathbf{v}\cdot d\mathbf{l}
   $$
   
-
 - 面积分：垂直作用于一个曲面的积分：
   $$
   \int_\mathcal{S}\mathbf{v}\cdot d\mathbf{a}
@@ -312,6 +317,7 @@ $$
 
 **散度基本定理（The Fundamental Theorem for Divergences）** 将面积分和散度的体积分联系到了一起：
 $$
+\label{divergence-theorem}
 \underset{\mathcal{V}}{\int}(\nabla\cdot\mathbf{v})\,d\tau = \underset{\mathcal{S}}{\oint}\mathbf{v}\cdot d\mathbf{a}
 $$
 它也被称为 **高斯定理（Gauss's Theorem）**、**格林定理（Green's Theorem）** 或 **散度定理（Divergence Theorem）**。其几何意义在于，一个闭合曲面的通量等于该曲面包围的面积内总量的变化值。同样地，这也将一个积分（等式左侧）的结果取决于其边界区域（等式右侧的曲面）。
@@ -343,6 +349,7 @@ $$
 $$
 根据散度定理我们可以进一步得到：
 $$
+\label{partial-integration}
 \int_\mathcal{V} f(\nabla\cdot\mathbf{A})\,d\tau = -\int_\mathcal{V}\mathbf{A}\cdot(\nabla f)\,d\tau + \oint_\mathcal{S} f\mathbf{A}\cdot d\mathbf{a}
 $$
 看起来非常抽象，但分部积分确实是一个非常强大的积分工具，我们会时常用到。
@@ -470,6 +477,7 @@ $$
 
 在 (b)、(c)、(d) 的情况下，$dq$ 分别可以写为 $\lambda\,dl$、$\sigma\,da$、$\rho\,d\tau$，其中 $\lambda$、$\sigma$、$\rho$ 分别是电荷的线密度、面密度和体密度。其中最常用的就是体密度。我们有时会把下面这个公式称为库仑定律：
 $$
+\label{coulomb's-law}
 \mathbf{E}(\mathbf{r}) = \frac{1}{4\pi\epsilon_0}\int\frac{\rho(\mathbf{r}')}{\mathscr{r}^2}\hat{\boldsymbol{\mathscr{r}}}\,d\tau
 $$
 让我们同样通过一个例子来理解连续分布的电荷产生的电场强度：
@@ -561,7 +569,7 @@ $$
 
 ### 拉普拉斯方程
 
-拉普拉斯方程在物理学中非常常见，它的解被称为 **简谐函数（Harmonic Function）**。接下来我们会发现它的两个重要性质：
+拉普拉斯方程在物理学中非常常见，它的解被称为 **调和函数（Harmonic Function）**。接下来我们会发现它的两个重要性质：
 
 - 在其中某个点的解等于其周围等距离边界上的解的平均值。
 - 不会出现局部极值。换句话说，方程解的极值只会出现在边界。
@@ -592,11 +600,12 @@ V(x, y) = \frac{1}{2\pi R}\underset{\text{circle}}{\oint}V\,dl
 $$
 （这不是 $V$ 的解！）可以看到任一点的解都是其周围以之为中心任取的圆边界上解的平均值。受这个特性启发，我们可以设计出一个计算电势的算法：首先确定边界上所有点的电势，并对内部特定网格上的点上的电势进行合理猜测。之后，根据这些值更新周围点的平均电势。多次迭代后就能够得到确定的电势。
 
-有趣的事实：二维中的简谐函数是最小化通过给定边界线曲面面积的曲面。
+有趣的事实：二维中的调和函数是最小化通过给定边界线曲面面积的曲面。
 
 #### 三维的拉普拉斯方程
 
 $$
+\label{laplace-equation-3d}
 \frac{\partial^2 V}{\partial x^2} + \frac{\partial^2 V}{\partial y^2} + \frac{\partial^2 V}{\partial z^2} = 0
 $$
 
@@ -607,7 +616,7 @@ $$
 
 #### 边界条件、导体和唯一性定理
 
-我们至今都没有给出拉普拉斯方程的通解（除了一维的情形），实际上我们甚至不知道在给定多少边界条件时能够确定一个方程的解。通过之前介绍的简谐函数性质，我们猜测如果确定了一个闭合范围边界上的值，就能够确定这个闭合区域中所有的解：
+我们至今都没有给出拉普拉斯方程的通解（除了一维的情形），实际上我们甚至不知道在给定多少边界条件时能够确定一个方程的解。通过之前介绍的调和函数性质，我们猜测如果确定了一个闭合范围边界上的值，就能够确定这个闭合区域中所有的解：
 
 > **第一唯一性定理**：某个不包含电荷的体积 $\mathcal{V}$ 中的电势由这个体积的边界 $\mathcal{S}$ 上的电势唯一地确定。
 
@@ -682,7 +691,9 @@ $$
 
  ### 分离变量法
 
-现在介绍一种直接解决拉普拉斯方程的方式，它基于一个简单的假设：简谐函数能够表示成一系列一元函数的积，即如下形式（我们先从二维中的拉普拉斯方程讲起）：
+#### 笛卡尔坐标系
+
+现在介绍一种直接解决拉普拉斯方程的方式，它基于一个简单的假设：调和函数能够表示成一系列一元函数的积，即如下形式（我们先从二维中的拉普拉斯方程讲起）：
 $$
 V(x, y) = X(x)Y(y)
 $$
@@ -700,7 +711,7 @@ $$
 $$
 V(x, y) = (Ae^{kx} + Be^{-kx})(C\sin{ky} + D\sin{ky})
 $$
-为了能进一步求解这个方程，我们设定四个边界条件：
+为了能进一步求解这个方程，我们设定四个边界条件（这只是某一种特殊情形，后面根据问题的不同设置我们需要不同的边界条件）：
 
 - $y = 0$ 时 $V = 0$。
 - $y = a$ 时 $V = 0$。
@@ -709,7 +720,7 @@ $$
 
 这实际上是一个非常基本的情形，图示如下：
 
-<img src="graphs/ed1_2-3.png" alt="ed1_2-3" style="zoom:40%;" />
+<img src="graphs/ed1_3-1.png" alt="ed1_3-1" style="zoom:40%;" />
 
 我们将边界条件中的前两条代入 (87) 式，可以得到：
 $$
@@ -719,13 +730,497 @@ $$
 $$
 V(x, y) = \sum_{n=1}^\infty C_ne^{-\frac{n\pi x}{a}}\sin{\frac{n\pi y}{a}}
 $$
-边界条件的第三条要求 $V(0, y) = V_0(y)$。我们可以根据傅立叶级数的知识对 *任意* 的 $V_0(y)$ 进行例如 (89) 式（取 $x = 0$ ）的构造。最后一个问题是 $C_n$ 的求解，这用到了一个小技巧。我们将 (89) 式稍稍改写一下，引入 $n' \in \Z^+$：
+边界条件的第三条要求 $V(0, y) = V_0(y)$。我们可以根据傅立叶级数的知识对 *任意* 的 $V_0(y)$ 进行例如 (89) 式（取 $x = 0$ ）的构造（这和函数的 **完备性（Completeness）** 有关，具体证明比较复杂，我们这里不进行说明）。最后一个问题是 $C_n$ 的求解，这用到了一个小技巧。我们将 (89) 式稍稍改写一下，引入 $n' \in \Z^+$：
 $$
 \sum_{n=1}^\infty C_n\int_0^a\sin{\frac{n\pi y}{a}}\sin{\frac{n'\pi y}{a}}\,dy = \int_0^aV_0(y)\sin{\frac{n'\pi y}{a}}\,dy
 $$
-左式的值惊人地简单，在 $n' \ne n$ 时均为 $0$。在 $n' = n$ 时则是 $\frac{a}{2}C_n$。这样我们就得到了 $C_n$ 的计算式：
+左式的值惊人地简单，在 $n' \ne n$ 时均为 $0$。在 $n' = n$ 时则是 $\frac{a}{2}C_n$（这被称为函数的 **正交性（Orthogonality）**）。这样我们就得到了 $C_n$ 的计算式：
 $$
 C_n = \frac{2}{a}\int_0^aV_0(y)\sin{\frac{n\pi y}{a}}\,dy
 $$
-让我们举两个例子来说明。
+让我们举例子来说明：
+
+> **例**：用分离变量法解拉普拉斯方程，边界条件和前文中列出的一致，除了 $V(0, y) = V_0$ 是一个常数。
+
+> **解**：因为边界条件 $V(0, y) = V_0$，我们可以进一步化简 (91) 式：
+> $$
+> C_n = \frac{2V_0}{a}\int_0^a\sin{\frac{n\pi y}{a}}\,dy = \frac{2V_0}{n\pi}(1 - \cos{n\pi})
+> = \begin{cases}
+> 0, \quad \text{if $n$ is even} \\\\
+> \dfrac{4V_0}{n\pi}, \quad \text{if $n$ is odd}
+> \end{cases}
+> $$
+> 代入 (89) 式我们得到：
+> $$
+> V(x, y) = \frac{4V_0}{\pi}\sum_{n = 1, 3,...}\frac{1}{n}e^{-\frac{n\pi x}{a}}\sin{\frac{n\pi y}{a}}
+> $$
+> 这个级数实际上可以进一步简化为：
+> $$
+> V(x, y) = \frac{2V_0}{\pi}\arctan{\frac{\sin{\frac{\pi y}{a}}}{\sinh{\frac{\pi x}{a}}}}
+> $$
+> 图示如下：
+>
+> <img src="graphs/ed1_3-2.png" alt="ed1_3-2" style="zoom:50%;" /><img src="graphs/ed1_3-3.png" alt="ed1_3-3" style="zoom:40%;" />
+>
+> 右图中，(a), (b), (c), (d) 分别对应着 $n = 1, 5, 10, 100$ 的情形。可以看到随着 $n$ 变大，$V$ 越来越贴近于 $V_0$。
+
+> **例**：用分离变量法解拉普拉斯方程，边界条件如下：
+>
+> - $y = 0$ 及 $y = a$ 时 $V = 0$。
+> - $x = \pm b$ 时 $V = V_0$ 为一个常数。
+
+> **解**：虽然边界条件不同，我们同样可以得到 (87) 式。之后代入边界条件化简为：
+> $$
+> V(x, y) = C\cosh{\frac{n \pi x}{a}}\sin{\frac{n \pi y}{a}}
+> $$
+> 线性组合后得到：
+> $$
+> V(x, y) = \sum_{n = 1}^\infty C_n\cosh{\frac{n\pi x}{a}}\sin{\frac{n \pi y}{a}}
+> $$
+> 其中 $C_n$ 的求解步骤和之前介绍的类似，最后我们得到：
+> $$
+> V(x, y) = \frac{4V_0}{\pi}\sum_{n=1,3,...}\frac{1}{n}\frac{\cosh{\frac{n\pi x}{a}}}{\cosh{\frac{n\pi b}{a}}}\sin{\frac{n\pi y}{a}}
+> $$
+> 如下图所示：
+>
+> <img src="graphs/ed1_3-4.png" alt="ed1_3-4" style="zoom:45%;" />
+
+> **例**：一个无限长的接地金属管道（长宽分别为 $a, b$），在某一个截面处的电势为 $V_0(y, z)$。求该管道的电势分布。图示如下：
+>
+> <img src="graphs/ed1_3-5.png" alt="ed1_3-5" style="zoom:50%;" />
+
+> **解**：这里我们需要解一个三维的拉普拉斯方程，即 $(\ref{laplace-equation-3d})$ 式。利用分离变量法，我们假设 $V(x, y, z) = X(x)Y(y)Z(z)$。代入原方程后得到：
+> $$
+> \frac{1}{X}\frac{d^2 X}{dx^2} + \frac{1}{Y}\frac{d^2 Y}{dy^2} + \frac{1}{Z}\frac{d^2 Z}{dz^2} = 0
+> $$
+> 设：
+> $$
+> \begin{align}
+> 	\frac{d^2 X}{dx^2} = (k^2+l^2)X\quad \frac{d^2 Y}{dy^2} = -k^2Y \quad \frac{d^2Z}{dz^2} = -l^2Z
+> \end{align}
+> $$
+> 对于这三个常微分方程，我们可以轻易地得到下面的解：
+> $$
+> \begin{align}
+> 	X(x) = Ae^{\sqrt{k^2+l^2}x} + Be^{-\sqrt{k^2+l^2}x} && Y(y) = C\sin{ky} + D\cos{ky} && Z(z) = E\sin{lz} + F\cos{lz}
+> \end{align}
+> $$
+> 代入边界条件，我们可以得到下面的解：
+> $$
+> 	V(x, y, z) = Ce^{-\pi\sqrt{(n/a)^2 + (m/b)^2}x}\sin{\frac{n\pi y}{a}}\sin{\frac{m\pi z}{b}}
+> $$
+> 由于 $m, n$ 都是任取的正整数，根据拉普拉斯方程的线性，通解可以写成级数的形式：
+> $$
+> V(x, y, z) = \sum_{n=1}^\infty\sum_{m=1}^\infty C_{n, m}e^{-\pi\sqrt{(n/a)^2+(m/b)^2}x}\sin{\frac{n\pi y}{a}}\sin{\frac{m\pi z}{b}}
+> $$
+> 同时，边界条件 $V(0, y, z) = V_0(y, z)$，可以帮助我们得到 $C_{n, m}$ 的算式：
+> $$
+> C_{n, m} = \frac{4}{ab}\int_0^a\int_0^bV_0(y, z)\sin{\frac{n\pi y}{a}}\sin{\frac{m\pi z}{b}}\,dy\,dz
+> = \begin{cases}
+> 0 \quad \text{if $n$ or $m$ is even} \\\\
+> \dfrac{16V_0}{\pi^2nm} \quad \text{if $n$ and $m$ are odd}
+> \end{cases}
+> $$
+> 最后的式子是：
+> $$
+> V(x, y, z) = \frac{16V_0}{\pi^2}\sum_{n, m = 1, 3, ...}\frac{1}{nm}e^{-\pi\sqrt{(n/a)^2 + (m/b)^2}x}\sin{\frac{n\pi y}{a}}\sin{\frac{m\pi z}{b}}
+> $$
+
+#### 球坐标系
+
+此前的边界都是平行于坐标轴的平面，因此使用笛卡尔坐标系非常合适。但是我们同样对以球面为边界的电势问题感兴趣。球坐标系中，拉普拉斯方程是以下的形式：
+$$
+\frac{1}{r^2}\frac{\partial}{\partial r}\left(r^2\frac{\partial V}{\partial r}\right) + \frac{1}{r^2\sin{\theta}}\frac{\partial }{\partial \theta}\left(\sin{\theta}\frac{\partial V}{\partial \theta}\right) + \frac{1}{r^2\sin^2\theta}\frac{\partial^2 V}{\partial \phi^2} = 0
+$$
+这个式子令人望而却步。我们假设这个式子和 $\phi$ 无关，这样我们可以将其简化为：
+$$
+\label{laplace-3d-spherical-reduced}
+\frac{\partial }{\partial r}\left(r^2\frac{\partial V}{\partial r}\right) + \frac{1}{\sin{\theta}}\frac{\partial}{\partial \theta}\left(\sin{\theta}\frac{\partial V}{\partial \theta}\right) = 0
+$$
+利用分离变量法，我们假设：
+$$
+V(r, \theta) = R(r)\Theta(\theta)
+$$
+插入 $(\ref{laplace-3d-spherical-reduced})$ 式，我们可以得到：
+$$
+\frac{1}{R}\frac{d}{dr}\left(r^2\frac{dR}{dr}\right) + \frac{1}{\Theta\sin{\theta}}\frac{d}{d\theta}\left(\sin{\theta}\frac{d\Theta}{d\theta}\right) = 0
+$$
+我们同样用一个常数来代替每一项：
+$$
+\frac{1}{R}\frac{d}{dr}\left(r^2\frac{dR}{dr}\right) = -\frac{1}{\Theta\sin{\theta}}\frac{d}{d\theta}\left(\sin{\theta}\frac{d\Theta}{d\theta}\right) = l(l + 1)
+$$
+这里，常数 $l(l + 1)$ 是为了之后答案简洁而故意设成这样。下面是这两个常微分方程的解：
+$$
+\begin{align}
+	R(r) = Ar^l + \frac{B}{r^{l+1}} && \Theta(\theta) = P_l(\cos{\theta})
+\end{align}
+$$
+其中 $P_l(x)$ 被称为 **勒让德多项式（Legendre Polynomial）**，其通常可以通过 **罗德里格公式（Rodrigues Formula）** 计算得到：
+$$
+\label{rodrigues-formula}
+P_l(x) = \frac{1}{2^ll!}\left(\frac{d}{dx}\right)^l(x^2 - l)^l
+$$
+作为举例，下面是前几个勒让德多项式：
+$$
+\begin{align*}
+	P_0(x) &= 1 \\
+	P_1(x) &= x \\
+	P_2(x) &= \frac{1}{2}(3x^2 - 1) \\
+	P_3(x) &= \frac{1}{2}(5x^3 - 3x) \\
+	P_4(x) &= \frac{1}{8}(35^4 - 30x^2 + 3)
+\end{align*}
+$$
+其典型的性质是：
+
+- $P_l(1) = 1$，这也是它的系数 $\frac{1}{2^ll!}$ 的功劳。
+- 第奇数个勒让德多项式只有 $x$ 的奇数次幂；第偶数个勒让德多项式只有 $x$ 的偶数次幂。这对函数的奇偶性会有一定启示。
+
+这样我们就得到了球坐标系下不考虑方位角 $\phi$ 的拉普拉斯方程的通解：
+$$
+V(r, \theta) = \sum_{l = 0}^\infty\left(A_lr^l + \frac{B_l}{r^{l+1}}\right)P_l(\cos\theta)
+$$
+这里需要注意的是，勒让德多项式并不是 $\Theta(\theta)$ 唯一的解（原方程是二阶的偏微分方程），但它们在 $\theta = 0$ 或 $\theta = \pi$ 时会得到物理中不成立的值，因此我们不考虑。作为例子，$l = 0$ 时另外有一个解 $\Theta(\theta) = \ln\left(\tan{\frac{\theta}{2}}\right)$。
+
+下面举一些例子说明：
+
+> **例**：求解球坐标系中的拉普拉斯方程，其中在球表面处的电势为 $V_0(\theta)$。
+
+> **解**：为了不让电势在原点爆掉，$B_l$ 应该是 $0$。因此通解是：
+> $$
+> V(r, \theta) = \sum_{l=0}^\infty A_lr^lP_l(\cos{\theta})
+> $$
+> 同时为了满足边界条件 $V(R, \theta) = V_0(\theta)$，根据勒让德多项式在 $-1 \le x \le 1$ 的完备性和正交性（不作证明），我们有：
+> $$
+> \int_{-1}^1P_l(x)P_{l'}(x)\,dx = \int_0^\pi P_l(\cos{\theta})P_{l'}(\cos{\theta})\sin{\theta}\,d\theta
+> = \begin{cases}
+> 0, \quad \text{if $l' \ne l$} \\\\
+> \dfrac{2}{2l + 1}, \quad \text{if $l' = l$}
+> \end{cases}
+> $$
+> 因此对前式（取 $r = R$）两侧都乘上 $P_{l'}(\cos{\theta})$ 并积分后，可以得到：
+> $$
+> A_l = \frac{2l + 1}{2R^l}\int_0^\pi V_0(\theta)P_l(\cos{\theta})\sin\theta\,d\theta
+> $$
+> 这个式子显然没有解析解。事实上我们习惯的解法是直接通过边界条件的式子得到通用解。以 $V_0(\theta) = k\sin^2(\frac{\theta}{2})$ 为例（$k$ 是一个常数）。通过半角公式我们可以得到：
+> $$
+> V_0(\theta) = \frac{k}{2}(1 - \cos\theta) = \frac{k}{2}[P_0(\cos\theta) - P_1(\cos\theta)]\nonumber
+> $$
+> 把这个式子和 $V(R, \theta) = \sum_{l=0}^\infty A_lR^lP_l(\cos\theta) = V_0(\theta)$ 对比，就可以得到 $A_0 = \frac{k}{2}, A_1 = -\frac{k}{2R}$，再代入通解：
+> $$
+> V(r, \theta) = \frac{k}{2}\left(1 - \frac{r}{R}\cos\theta\right)
+> $$
+
+### 多极展开
+
+#### 远距离的电势估计
+
+在一个电荷分布的很远处，我们可以将这个电荷分布看作一个点电荷来计算电势，这没有问题（我们时常也用这个来检查计算出来的电势）；此外，如果 $Q \approx 0$ ，我们大可将电势估计为 $0$，因为在电荷分布的很远处，通常电势都会非常小。下面我们构建一个常见的模型来深入探讨这个情景。
+
+一个 **电偶极子（Electric Dipole）** 由一对距离为 $d$ 的正负电荷构成，电量为 $\pm q$。图片描述如下：
+
+<img src="graphs/ed1_3-6.png" alt="ed1_3-6" style="zoom:45%;" />
+
+下面我们尝试得到在电偶极子远处的电势：
+$$
+V(\mathbf{r}) = \frac{1}{4\pi \epsilon_0}\left(\frac{q}{\mathscr{r}_+} - \frac{q}{\mathscr{r}_-}\right)\nonumber
+$$
+根据余弦定理，并考虑 $d \gg r$ 我们有：
+$$
+\mathscr{r}_{\pm} = r^2 + \left(\frac{d}{2}\right)^2 \mp rd\cos\theta = r^2\left(1 \mp \frac{d}{r}\cos\theta + \frac{d^2}{4r^2}\right) \approx r^2\left(1 \mp \frac{d}{r}\cos\theta\right)\nonumber
+$$
+取倒数后相减得到：
+$$
+\frac{1}{\mathscr{r}_+} - \frac{1}{\mathscr{r}_-} \approx \frac{d}{r^2}\cos\theta\nonumber
+$$
+这样就得到了电偶极子在远处的电势分布：
+$$
+V(\mathbf{r}) = \frac{1}{4\pi\epsilon_0}\frac{qd\cos\theta}{r^2}
+$$
+这个结果可能还有些出乎意料，因为电势的衰减速度居然和距离成平方反比。实际上，如果对于类似设置的 **四极子（Quadrupole）**、**八极子（Octopole）** 进行分析，它们的电势衰减速度分别为立方反比和四次方反比。
+
+<img src="graphs/ed1_3-7.png" alt="ed1_3-7" style="zoom:50%;" />
+
+现在让我们考虑一个更加通用的场景。对于一个电荷分布，取原点到源和场的径矢 $\mathbf{r}'$ 和 $\mathbf{r}$，源到场的矢量为 $\mathscr{r}$（这正是我们一直以来的设置）。设 $\mathbf{r}$ 和 $\mathbf{r}'$ 的夹角为 $\alpha$。根据余弦定理有：
+$$
+\mathscr{r}^2 = r^2 + r'^2 - 2rr'\cos\alpha = r^2\left[1 + \left(\frac{r'}{r}\right)^2 - 2\left(\frac{r'}{r}\right)\cos\alpha\right]\nonumber
+$$
+我们记：
+$$
+\epsilon = \left(\frac{r'}{r}\right)\left(\frac{r'}{r} - 2\cos\alpha\right)\nonumber
+$$
+这样原始就可以写为 $\mathscr{r} = r\sqrt{1 + \epsilon}$ 的形式了。根据二项式定理我们可以将其展开为多项式：
+$$
+\begin{align}
+\frac{1}{\mathscr{r}} &= \frac{1}{r}\left(1 - \frac{1}{2}\epsilon + \frac{3}{8}\epsilon^2 - \frac{5}{16}\epsilon^3 + ... \right) \nonumber\\
+&= \frac{1}{r}\left[1 - \frac{1}{2}\left(\frac{r'}{r}\right)\left(\frac{r'}{r} - 2\cos\alpha\right) + \frac{3}{8}\left(\frac{r'}{r}\right)^2\left(\frac{r'}{r} - 2\cos\alpha\right)^2 - \frac{5}{16}\left(\frac{r'}{r}\right)^3\left(\frac{r'}{r} - 2\cos\alpha\right)^3 + ...\right] \nonumber\\
+&= \frac{1}{r}\left[1 + \left(\frac{r'}{r}\right)\cos\alpha + \left(\frac{r'}{r}\right)^2\left(\frac{3\cos^2\alpha - 1}{2}\right) + \left(\frac{r'}{r}\right)^3\left(\frac{5\cos^3\alpha - 3\cos\alpha}{2}\right) + ...\right] \nonumber\\
+&= \frac{1}{r}\sum_{n=0}^\infty \left(\frac{r'}{r}\right)^nP_n(\cos\alpha)
+\end{align}
+$$
+中间真的非常巧合，每一项的系数正好是勒让德多项式。这样，我们就得到了任意电荷分布在远处的产生的电势，我们也将其称为电势 $\frac{1}{r}$ 的 **多极展开（Multipole Expansion）**：
+$$
+\label{multipole-expansion}
+V(\mathbf{r}) = \frac{1}{4\pi\epsilon_0}\sum_{n=0}^\infty \frac{1}{r^{n+1}}\int r'^nP_n(\cos\alpha)\rho(\mathbf{r}')\,d\tau'
+$$
+
+#### 单极子和偶极子
+
+在 $r \gg 0$ 时，多极展开公式被第一项主导，也就是单极子的电势近似（当 $r' = 0$ 时，这个式子就是准确的电势公式）：
+$$
+V_\text{mon}(\mathbf{r}) = \frac{1}{4\pi \epsilon_0}\frac{Q}{r}\nonumber
+$$
+当总电荷 $Q \to 0$ 时，主导的就是第二项了（因为第一项趋于 $0$）：
+$$
+V_\text{dip}(\mathbf{r}) = \frac{1}{4\pi\epsilon_0}\frac{1}{r^2}\int r'\cos\alpha\rho(\mathbf{r}')\,d\tau'\nonumber
+$$
+由于 $r'\cos\alpha = \hat{\mathbf{r}}\cdot\mathbf{r}'$，我们可以将上式写得更为简洁：
+$$
+V_\text{dip}(\mathbf{r}) = \frac{1}{4\pi\epsilon_0}\frac{1}{r^2}\hat{\mathbf{r}}\cdot\int\mathbf{r}'\rho(\mathbf{r}')\,d\tau'\nonumber
+$$
+其中和 $\mathbf{r}$ 无关的项称为 **偶极矩（Dipole Moment）**：
+$$
+\label{def-dipole-moment}
+\marginbox{\mathbf{p} = \int\mathbf{r}'\rho(\mathbf{r}')\,d\tau'}
+$$
+这样，也可以将满足偶极子分布的电势写成：
+$$
+\label{dipole-potential}
+V_\text{dip}(\mathbf{r}) = \frac{1}{4\pi\epsilon_0}\frac{\mathbf{p}\cdot\hat{\mathbf{r}}}{r^2}
+$$
+偶极矩取决于电荷分布的集合特性（比如说形状、大小和密度）。如果考虑离散的电荷分布，偶极矩的定义如下式：
+$$
+\mathbf{p} = \sum_{i=1}^nq_i\mathbf{r}_i'
+$$
+特别地，只有正负两个电荷存在时（此时我们称其为 **物理偶极子（Physical Dipole）**，它们产生的偶极矩将只和它们之间的距离有关：
+$$
+\label{physical-dipole}
+\mathbf{p} = q\mathbf{r}_+' - q\mathbf{r}_-' = q\mathbf{d}
+$$
+结合 $(\ref{dipole-potential})$，我们可以得到与上一节相同的结论。注意这里是一个估计值；当 $r$ 变大或者 $d$ 变小时，这个估计会更加精确。当 $d \to 0$ 时，我们可以得到一个 **完美偶极子（Perfect Dipole）**。此时为了不让偶极矩削减至零，我们还应该让 $q \to \infty$，保证 $qd$ 是一个固定的值。此时我们可以放心地使用 $(\ref{dipole-potential})$ 式了。
+
+#### 电偶极子的电场
+
+现在我们假设偶极矩在原点沿 $z$ 方向。此时电势可以在球坐标系中简化为：
+$$
+V_\text{dip}(r, \theta) = \frac{p\cos\theta}{4\pi\epsilon_0r^2}
+$$
+求它每个方向的梯度的负数即是该方向的电场，综合起来就是：
+$$
+\textbf{E}_\text{dip}(r, \theta) = \frac{p}{4\pi\epsilon_0}(2\cos\theta\hat{\mathbf{r}} + \sin\theta\hat{\boldsymbol{\theta}})
+$$
+可以看到偶极子场和距离的三次方成反比；类似地我们能得到四极子场和距离的四次方、八极子场和距离的五次方……成反比。这和我们此前得到的结论（电偶极子的电势和平方成反比，四极子和八极子则是平方反比和立方反比）互洽。
+
+下面是偶极子场的示意图，可以看到它非常相似于磁场：
+
+<img src="graphs/ed1_3-8.png" alt="ed1_3-8" style="zoom:40%;" />
+
+左侧是一个完美偶极子的电场，右侧是一个物理偶极子的电场。
+
+
+
+## 物质中的电场
+
+这一章，让我们研究物质中的电场。我们将物质分为两种，**导体（Conductor）** 和 **绝缘体（Insulator）**（或称为 **电介质（Dielectric）**。前者充斥了可以自由移动的电子，它们不依附于任一个原子核；后者中的电子则紧紧关联于一个原子核，只能在原子范围内适量移动。虽然电介质中的电子并不容易移动，但它 *依然* 会受电场影响运动，主要以两种形式，**伸展** 和 **旋转**，我们很快就会提到它们。
+
+### 极化
+
+当把一个中性的粒子放到电场 $\mathbf{E}$ 中时，会发生什么？你可能会下意识认为无事发生。但由于原子中存在电子以及带正电的原子核，它们受到电场影响会以相反的方向运动：电子逆着电场方向，而原子核顺着电场方向。电场足够强的情况下，一些电子会完全脱离原子核，使其成为离子；其余的时候，电子和原子核会达到一个微妙的平衡：电场 $\mathbf{E}$ 虽然让它们相互分开，但是它们之间的电荷力会互相吸引。此时我们称这个原子被 **极化（Polarize）** 了。回忆我们上一章介绍的概念，这就形成了一个偶极矩，其方向和 $\mathbf{E}$ 一致。这个偶极矩在电场不足以 **离子化（Ionize）** 原子前，和电场强度成正比：
+$$
+\label{polarizability}
+\mathbf{p} = \alpha \mathbf{E}
+$$
+其中常数 $\alpha$ 被称为 **原子极化度（Atomic Polarizability）**，它和原子类型相关。下表给出了一些常见的原子的极化度：
+$$
+\fbox{
+$\begin{array}{cccccccccc}
+\text{H} & \text{He} & \text{Li} & \text{Be} & \text{C} & \text{Ne} & \text{Na} & \text{Ar} & \text{K} & \text{Cs} \\
+0.667 & 0.205 & 24.3 & 5.60 & 1.67 & 0.396 & 24.1 & 1.64 & 43.4 & 59.4
+\end{array}
+$
+}
+$$
+如果你对化学有一定了解，可以同时联系这些原子的化学性质。
+
+对于分子，极化就变得复杂了。分子中的每个原子都会发生极化且在极化程度和方向相关。以 $\text{CO}_2$ 为例，如果沿着它的轴施加电场，极化度就是 $4.5\times 10^{-40} \,\text{C}^2\cdot\text{m}/\text{N}$。而垂直于这个方向的电场则会使其拥有 $2.0\times 10^{-40}\,\text{C}^2\cdot\text{m}/\text{N}$ 的极化度。对于其它方向的极化度可以通过叠加原理得到：
+$$
+\mathbf{p} = \alpha_{\perp}\mathbf{E}_\perp + \alpha_{\parallel}\mathbf{E}_\parallel \nonumber
+$$
+$\text{CO}_2$ 的分子模型还算简单（因为它的三个原子成一条直线），如果是最通用的情况，就会形成下面这样的 **极化度张量（Polarizabiliy Tensor）**：
+$$
+\begin{cases}
+	p_x = \alpha_{xx}E_x + \alpha_{xy}E_y + \alpha_{xz}E_z \\
+	p_y = \alpha_{yx}E_x + \alpha_{yy}E_y + \alpha_{yz}E_z \\
+	p_z = \alpha_{zx}E_x + \alpha_{zy}E_y + \alpha_{zz}E_z
+\end{cases}
+$$
+
+#### 极化分子的对齐
+
+现在考虑一个没有那么对称的情况，水分子 $\text{H}_2\text{O}$。它的结构大致如下：
+
+<img src="graphs/ed1_4-1.png" alt="ed1_4-1" style="zoom:50%;" />
+
+我们不给出具体的计算过程，但水分子的偶极矩大概为 $6.1\times 10^{-30}\ \text{C}\cdot\text{m}$，这是相当大的，也因此使水成为优秀的溶剂。另一方面，由于水分子在图示的方向上并不对称，在匀强电场下会产生一个力矩。将两个氢原子的质心与氧原子质心连线的中点视作原点，可以列出下面的等式：
+$$
+\begin{align}
+\begin{split}
+\boldsymbol{\tau} &= (\mathbf{r}_+\times\mathbf{F}_+) + (\mathbf{r}_-\times\mathbf{F}_-) \\
+&= \frac{1}{2}\mathbf{d}\times q\mathbf{E} + (-\frac{1}{2}\mathbf{d})\times (-q\mathbf{E}) \\
+&= q\mathbf{d}\times\mathbf{E}
+\end{split}
+\end{align}
+$$
+结合物理偶极子偶极矩的计算式 $(\ref{physical-dipole})$，我们有：
+$$
+\label{dipole-torque}
+\boldsymbol{\tau} = \mathbf{p}\times\mathbf{E}
+$$
+当电场不是匀强的时候，偶极子会受到一个非零的合外力 $\mathbf{F} = q\Delta \mathbf{E}$。 $\Delta \mathbf{E} = (\nabla E_x)\cdot\mathbf{d} + (\nabla E_y)\cdot\mathbf{d} + (\nabla E_z)\cdot\mathbf{d}$，故：
+$$
+\mathbf{F} = (\mathbf{p}\cdot\nabla)\mathbf{E}
+$$
+此时，如果依然将偶极子的质心作为原点，我们得到的力矩依然是 $(\ref{dipole-torque})$ 这个式子；如果以其它点为原点，就要考虑合外力，最终的力矩是 $\mathbf{N} = (\mathbf{p}\times \mathbf{E}) + (\mathbf{r}\times\mathbf{F})$。
+
+综上，我们考察了原子或分子在电场下产生的极化现象。无论是原子的“趋离子化”，还是分子受到的力矩，都让它们朝着某个方向进行变化。我们用 **极化强度（Polarization）** 来量化这个变化，它表示单位体积内偶极矩的大小，记作 $\mathbf{P}$。随后我们将利用这个物理量研究一个极化物体内的电场，
+
+### 极化物体内的电场
+
+#### 束缚电荷
+
+根据电势的定义 $()$ 和极化强度定义，我们可以给出极化物体产生的电势：
+$$
+V(\mathbf{r}) = \frac{1}{4\pi\epsilon_0}\underset{\mathcal{V}}{\int}\frac{\mathbf{P}(\mathbf{r}')\cdot\hat{\boldsymbol{\mathscr{r}}}}{\mathscr{r}^2}\,d\tau'
+$$
+注意到 $\dfrac{\hat{\boldsymbol{\mathscr{r}}}}{\mathscr{r}^2} =\nabla'\left(\dfrac{1}{\mathscr{r}}\right)$，其中 $\nabla'$ 指的是对源坐标求梯度，因此上面的式子可以写成：
+$$
+V(\mathbf{r}) = \frac{1}{4\pi\epsilon_0}\underset{\mathcal{V}}{\int}\mathbf{P}(\mathbf{r}')\nabla'\left(\frac{1}{r}\right)\,d\tau'
+$$
+利用分部积分法和散度定理，即公式 $(\ref{partial-integration})$，我们可以得到：
+$$
+V(\mathbf{r}) = \frac{1}{4\pi\epsilon_0}\underset{\mathcal{S}}{\oint}\frac{1}{\mathscr{r}}\mathbf{P}(\mathbf{r}')\cdot\,d\mathbf{a}' - \frac{1}{4\pi\epsilon_0}\underset{\mathcal{V}}{\int}\frac{1}{\mathscr{r}}(\nabla'\cdot\mathbf{P}(\mathbf{r}'))\,d\tau
+$$
+可以看到左侧比较像一个电荷分布的面积分，右侧则比较像一个体积分。对比电势的计算公式 $()$，我们设出两个虚拟的电荷密度：
+$$
+\begin{align}
+\begin{split}
+	\sigma_b &= \mathbf{P}\cdot\hat{\mathbf{n}} \\
+	\rho_b &= -\nabla\cdot\mathbf{P}
+\end{split}
+\end{align}
+$$
+此时我们可以将公式写为更加简洁的形式：
+$$
+V(\mathbf{r}) = \frac{1}{4\pi\epsilon_0}\underset{\mathcal{S}}{\oint}\frac{1}{\mathscr{r}}\sigma_b\,da' + \frac{1}{4\pi\epsilon_0}\underset{\mathcal{V}}{\int}\frac{1}{\mathscr{r}}\rho_b\,d\tau'
+$$
+这个结论告诉我们，一个极化物体的电势分布等价于一个拥有特定电荷密度的面积分和特定电荷密度的体积分之和。我们将这些“虚拟”的电荷称为 **束缚电荷（Bound Charge）**。不过事实上，这些电荷并非完全抽象；它们就来自于极化物体中的一个个极化分子。让我们假设一个特殊的情形：一系列偶极子首尾相连在一条直线上，此时中间的所有电荷可以认为都互相抵消，只剩下首尾两个电荷。因此这个奇怪的结构等价于其仅在头部有一个正电荷而结尾有一个负电荷，如下图所示：
+
+<img src="graphs/ed1_4-2.png" alt="ed1_4-2" style="zoom:50%;" />
+
+我们将这样的两个电荷称为束缚电荷，因为它们距离相对较远，不能相互抵消。受这个结构启发，我们可以考察一个平行于 $\mathbf{P}$ 的管道（对于任一个极化物体，我们都能将其分为许多个这样的管道）。对其中的一个横截面为 $A$，长度为 $d \to 0$ 的小块（体积就是 $Ad$），它的偶极矩就是 $P(Ad)$。再根据物理偶极矩的公式 $(\ref{physical-dipole})$，有 $q = PA$。由于中间的电荷都互相抵消了，最后剩下的就是管道最外部的面上的电荷。考虑到这个面可能不垂直于 $\mathbf{P}$，我们需要乘上 $\cos\theta$ 作为参数，也即 $q = PA_\text{end}\cos\theta = \mathbf{P}\cdot\hat{\mathbf{n}}A$。所以单位面积上的电荷就是 $\sigma_b = \mathbf{P}\cdot\hat{\mathbf{n}}$。示意图如下：
+
+<img src="graphs/ed1_4-3.png" alt="ed1_4-3" style="zoom:40%;" />
+
+当电场并非是匀强的时候，$\mathbf{P}$ 会产生非零的散度。此时任取的一个体积 $\mathcal{V}$ 内的净电荷等于被“推出”其边界 $\mathcal{S}$ 的电荷总量取负（回忆前面我们得到的 $q = PA$），因此我们可以列出：
+$$
+\underset{\mathcal{V}}{\int}\rho_b\,d\tau = -\underset{\mathcal{S}}{\oint}\mathbf{P}\cdot d\mathbf{a}\nonumber
+$$
+再根据散度定理 $(\ref{divergence-theorem})$，我们得到：
+$$
+\underset{\mathcal{V}}{\int}\rho_b\,d\tau = -\underset{\mathcal{V}}{\int}(\nabla\cdot\mathbf{P})\,d\tau\nonumber
+$$
+由于 $\mathcal{V}$ 是任取的，我们可以将积分符号摘掉，这样也就得到了 $\rho_b = -\nabla\cdot\mathbf{P}$。
+
+> **例**：求一个匀强电场下被极化的球产生的电势。
+
+> **解**：不失一般性，假设极化强度 $\mathbf{P} = P\hat{\mathbf{z}}$。此时束缚电荷的面密度是 $\sigma = \mathbf{P}\cdot\hat{\mathbf{n}} = P\cos\theta$。利用之前（上一章）我们的结论，有：
+> $$
+> V(r, \theta) = \begin{cases}
+> 	\dfrac{P}{3\epsilon_0}r\cos\theta\quad\quad \text{for $r \le R$} \\
+> 	\dfrac{P}{3\epsilon_0}\dfrac{R^3}{r^2}\cos\theta\quad\, \text{for $r \ge R$}
+> \end{cases}\nonumber
+> $$
+> 此时在球内的电场是：
+> $$
+> \mathbf{E} = -\nabla V = -\frac{P}{3\epsilon_0}\hat{\mathbf{z}} = -\frac{1}{3\epsilon_0}\mathbf{P}
+> $$
+> 可以看到这是一个匀强的电场。另一方面，在球外，产生的电势等价于球心的一个完美偶极子产生的电势，即：
+> $$
+> V = \frac{1}{4\pi\epsilon_0}\frac{\mathbf{p}\cdot\hat{\mathbf{r}}}{r^2}
+> $$
+> 这里的 $\mathbf{p}$ 等于整个球体产生的偶极矩：
+> $$
+> \mathbf{p} = \frac{4}{3}\pi R^3\mathbf{P}
+> $$
+> 下面是一个示意图。可以参考上一章结尾给出的图：
+>
+> <img src="graphs/ed1_4-4.png" alt="ed1_4-4" style="zoom:30%;" />
+
+### 电位移
+
+如果我们综合考虑一个电介质中的电荷，它可能包括束缚电荷和之前我们已经熟悉的 **自由电荷（Free Charge）**：
+$$
+\rho = \rho_b + \rho_f
+$$
+根据高斯定律和束缚电荷密度的计算公式，我们有：
+$$
+\epsilon_0\nabla\cdot\mathbf{E} = -\nabla\cdot\mathbf{P} + \rho_f\nonumber
+$$
+将 del 算子移到同一边，我们可以得到：
+$$
+\nabla\cdot(\epsilon_0\mathbf{E} + \mathbf{P}) = \rho_f \nonumber
+$$
+这样就可以引入 **电位移（Electric Displacement）**的概念了：
+$$
+\marginbox{\mathbf{D} = \epsilon_0\mathbf{E} + \mathbf{P}}
+$$
+之前的式子也可以写为高斯定律的微分形式：
+$$
+\nabla\cdot \mathbf{D} = \rho_f
+$$
+其对应的积分形式便是：
+$$
+\oint\mathbf{D}\cdot\,d\mathbf{a} = Q_{f_\text{enc}}
+$$
+虽然电位移 $\mathbf{D}$ 和电场强度 $\mathbf{E}$ 从公式上来看非常相似，它们多数情况下有完全不同的性质。首先，不存在关于电位移的库仑定律 $(\ref{coulomb's-law})$，即电位移不能通过对距离平方反比求体积分得到。此外，它也不存在与电势相等的概念，这是因为电位移的旋度不恒等于 $\mathbf{0}$：
+$$
+\nabla\times\mathbf{D} = \epsilon_0(\nabla\times\mathbf{E}) + (\nabla\times\mathbf{P}) = \nabla\times\mathbf{P}
+$$
+因此通常情况下，它不是任何物理量的梯度，因此也就不存在类似于电势的概念了。
+
+#### 线性电介质
+
+让我们回顾 $(\ref{polarizability})$，探究极化产生的原因。大多数情况下，我们可以将这个式子写成：
+$$
+\label{susceptibility}
+\mathbf{P} = \epsilon_0\chi_e\mathbf{E}
+$$
+其中 $\chi_e$ 是介质的 **电极化率（Electric Susceptibility）**，它取决于物质的微观结构，以及温度等环境因素。 $\mathbf{E}$ 是考虑了极化产生的电场之后的总电场强度。我们将所有满足 $(\ref{susceptibility})$ 的物质称为 **线性电介质（Linear Dielectric）**。我们可以进一步得到电位移和总电场强度的关系：
+$$
+\mathbf{D} = \epsilon_0E + \mathbf{P} = \epsilon_0(1 + \chi_e)\mathbf{E} = \epsilon\mathbf{E}
+$$
+其中将 $1 + \chi_e$ 记为 $\epsilon$，称为 **介电率（Permittivity）**。和 $\epsilon_0$ 对比就能知道真空中 $\chi_0 = 0$，这很符合直觉。我们也将物质的介电率和真空介电率的比值记作 $\epsilon_r$，称为 **相对介电率（Relative Permittivity）**，或 **电介质常数（Dielectric Constant）**。下面是一些常见物质的电介质常数：
+
+| 物质     | 电介质常数 | 物质                 | 电介质常数 | 物质             | 电介质常数 |
+| :------- | :--------- | -------------------- | ---------- | ---------------- | ---------- |
+| 真空     | 1          | 氦气                 | 1.000065   | 氢气             | 1.000254   |
+| 干燥空气 | 1.000536   | 水蒸气（100 摄氏度） | 1.00589    | 苯               | 2.28       |
+| 钻石     | 5.7-5.9    | 盐                   | 5.9        | 硅               | 11.7       |
+| 甲醇     | 33.0       | 水                   | 80.1       | 冰（-30 摄氏度） | 104        |
+| 钽铌酸钾 | 34000      |                      |            |                  |            |
+
+由于电位移现在和电场强度成正比，我们可以做出合理猜测：此时电位移的旋度为 $\mathbf{0}$。
+
+
+
+
+
+## 静磁场概览
+
+让我们回忆一下电动力学研究的问题，即一个测试电荷 $Q$ 在一系列源电荷 $q_i$ 的作用下的运动规律。在前面几章静电场的学习中，我们大概了解了源电荷均为静止时，其激发的场的性质。接下来的两章中，我们将探索 $q_i$ 在运动状态下， $Q$ 收到的影响，而这就是 **静磁场（Magetostatics）** 主要研究的内容。
+
+### 洛伦兹力
+
+通过实验发现，两端通电导线在电流方向相同时会相吸，反之则相斥，究竟是什么导致这种现象呢？如果将测试电荷静止放在通电导线附近，则不会发生任何现象。这说明这种未知的相互作用只发生在都进行相对运动的电荷之间，我们称其为 **磁力（Magnetic Force）**。正如静止电荷四周会分布电场 $\mathbf{E}$，运动的电荷四周会分布磁场 $\mathbf{B}$。它的分布情况如下图所示：
+
+<img src="graphs/ed1_5-1.png" alt="ed1_5-1" style="zoom:30%;" />
 
