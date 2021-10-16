@@ -6,6 +6,9 @@
 
 $$
 \newcommand{\marginbox}[1]{\fbox{$\hphantom{1} {#1} \vphantom{1\over1} \hphantom{1}$}}\nonumber
+\newcommand{\rcur}[0]{\mathscr{r}}
+\newcommand{\brcur}[0]{\boldsymbol{\mathscr{r}}}
+\newcommand{\unit}[1]{\hat{\boldsymbol{#1}}}
 $$
 
 
@@ -1216,9 +1219,11 @@ $$
 
 ## 静磁场概览
 
-让我们回忆一下电动力学研究的问题，即一个测试电荷 $Q$ 在一系列源电荷 $q_i$ 的作用下的运动规律。在前面几章静电场的学习中，我们大概了解了源电荷均为静止时，其激发的场的性质。接下来的两章中，我们将探索 $q_i$ 在运动状态下， $Q$ 收到的影响，而这就是 **静磁场（Magetostatics）** 主要研究的内容。
+让我们回忆一下电动力学研究的问题，即一个测试电荷 $Q$ 在一系列源电荷 $q_i$ 的作用下的运动规律。在前面几章静电场的学习中，我们大概了解了源电荷均为静止时，其激发的场的性质。接下来的两章中，我们将探索特定分布的 $q_i$ 在匀速直线运动状态下， $Q$ 收到的影响，而这就是 **静磁场（Magetostatics）** 主要研究的内容。
 
 ### 洛伦兹力
+
+#### 磁场力和磁场
 
 通过实验发现，两端通电导线在电流方向相同时会相吸，反之则相斥，究竟是什么导致这种现象呢？如果将测试电荷静止放在通电导线附近，则不会发生任何现象。这说明这种未知的相互作用只发生在都进行相对运动的电荷之间，我们称其为 **磁场力（Magnetic Force）**。正如静止电荷四周会分布电场 $\mathbf{E}$，运动的电荷四周会分布磁场 $\mathbf{B}$。分布情况如下图所示：
 
@@ -1313,7 +1318,7 @@ $$
 >
 > <img src="graphs/ed1_5-5.png" alt="ed1_5-4" style="zoom:50%;" />
 
-### 电流
+#### 电流
 
 **电流（Current）** 是指单位时间内通过某点的电荷数量，单位是 **安培（Amperes, $\text{A}$）**，满足 $1\ \text{A} = 1\ \text{C}/\text{s}$。需要注意的是，电流的方向和电荷类型有关；负电荷（比如电子）移动方向和电流方向是相反的。对于电荷线密度为 $\lambda$ 的电线，它的电流可以通过下式计算：
 $$
@@ -1357,5 +1362,40 @@ $$
 $$
 \int_\mathcal{S}\mathbf{J}\cdot\,d\mathbf{a} = \int_\mathcal{V}(\nabla\cdot\mathbf{J})\,d\tau \nonumber
 $$
+这是单位时间内从体积 $\mathcal{V}$ 中 *离开* 的电荷量。它应该和单位时间进入 $\mathcal{V}$ 的电荷量相同，因此：
+$$
+\int_\mathcal{V}(\nabla\cdot\mathbf{J})\,d\tau = -\frac{d}{dt}\int_\mathcal{V}\rho\,d\tau = -\int_\mathcal{V}\frac{\partial \rho}{\partial t}\,d\tau \nonumber
+$$
+因此我们得到下面的重要结论：
+$$
+\label{continuity-equation}
+\marginbox{\nabla\cdot\mathbf{J} = -\frac{\partial \rho}{\partial t}}
+$$
+我们也将其称为 **连续性方程（Continuity Equation）**，其描述了局部电荷的守恒性。
 
+最后让我们总结一下计算电流时几个等价的式子：
+$$
+\sum_i Nq_i\mathbf{v}_i = \int_\mathcal{L}N\mathbf{I}\,dl = \int_\mathcal{S}N\mathbf{K}\,da = \int_\mathcal{V}N\mathbf{J}\,d\tau
+$$
+这个和我们之前讨论电荷分布时，$dq = \lambda\,dl = \sigma\,da = \rho\,d\tau$ 是类似的。
+
+### 毕奥·萨伐尔定律
+
+我们至今一直将 $\mathbf{B}$ 当作已知的量，然而它究竟是多大呢？我们暂时只关注静磁场中 $\mathbf{B}$ 的大小。我们感兴趣的是会产生静磁场 **恒定电流（Steady Current）**，即电流方向和大小均保持不变。使得静磁场成立的重要一点是导线的任一处的电荷密度变化率为 $0$：
+$$
+\frac{\partial \rho}{\partial t} = 0
+$$
+需要注意单独的电荷 $q$ 匀速直线运动时 *不会* 产生静磁场，因为每当它移动到另一点，都会改变它运动轨迹上的电荷分布。一个理想的产生静磁场的模型是通恒定电流的无限长直导线。导线中任意一处的电流都是常数 $I$。此外，根据连续性方程 $(\ref{continuity-equation})$，我们能知道静磁场中：
+$$
+\nabla \cdot \mathbf{J} = 0
+$$
+**毕奥·萨伐尔定律（Biot-Savart Law）** 定义静磁场的磁感应强度 $\mathbf{B}$ 为：
+$$
+\mathbf{B}(\mathbf{r}) = \frac{\mu_0}{4\pi}\int\frac{\mathbf{I}\times\boldsymbol{\mathscr{r}}}{\mathscr{r}^2} = \frac{\mu_0I}{4\pi}\int\frac{d\mathbf{l}'\times\unit{\rcur}}{\rcur^2}
+$$
+其中 $\mu_0$ 被称为 **真空磁导率（Permeability of Free Space）**，其值为精确的：
+$$
+\mu_0 = 4\pi\times 10^{-7}\ \text{N}/\text{A}^2
+$$
+这是因为这个值使用来定义电流单位安培的（真空中两条恒定电流通过的长直导线，其相互之间的磁场力就是 $1\times 10^{-7}\ \text{N}$），随后再用来定义电荷单位库仑，以及真空介电率。磁感应强度本身的单位则是 **特斯拉（Tesla, $\text{T}$）**，其等价于 $\text{N}/(\text{A}\cdot\text{m})$。
 
