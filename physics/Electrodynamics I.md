@@ -957,7 +957,7 @@ $$
 &= \frac{1}{r}\sum_{n=0}^\infty \left(\frac{r'}{r}\right)^nP_n(\cos\alpha)
 \end{align}
 $$
-中间真的非常巧合，每一项的系数正好是勒让德多项式。这样，我们就得到了任意电荷分布在远处的产生的电势，我们也将其称为电势 $\frac{1}{r}$ 的 **多极展开（Multipole Expansion）**：
+中间真的非常巧合，每一项的系数正好是勒让德多项式（事实上，我们也将 $\frac{1}{r}$ 称为勒让德多项式的生成函数）。这样，我们就得到了任意电荷分布在远处的产生的电势，我们也将其称为电势 $\frac{1}{r}$ 的 **多极展开（Multipole Expansion）**：
 $$
 \label{multipole-expansion}
 V(\mathbf{r}) = \frac{1}{4\pi\epsilon_0}\sum_{n=0}^\infty \frac{1}{r^{n+1}}\int r'^nP_n(\cos\alpha)\rho(\mathbf{r}')\,d\tau'
@@ -1220,7 +1220,142 @@ $$
 
 ### 洛伦兹力
 
-通过实验发现，两端通电导线在电流方向相同时会相吸，反之则相斥，究竟是什么导致这种现象呢？如果将测试电荷静止放在通电导线附近，则不会发生任何现象。这说明这种未知的相互作用只发生在都进行相对运动的电荷之间，我们称其为 **磁力（Magnetic Force）**。正如静止电荷四周会分布电场 $\mathbf{E}$，运动的电荷四周会分布磁场 $\mathbf{B}$。它的分布情况如下图所示：
+通过实验发现，两端通电导线在电流方向相同时会相吸，反之则相斥，究竟是什么导致这种现象呢？如果将测试电荷静止放在通电导线附近，则不会发生任何现象。这说明这种未知的相互作用只发生在都进行相对运动的电荷之间，我们称其为 **磁场力（Magnetic Force）**。正如静止电荷四周会分布电场 $\mathbf{E}$，运动的电荷四周会分布磁场 $\mathbf{B}$。分布情况如下图所示：
 
-<img src="graphs/ed1_5-1.png" alt="ed1_5-1" style="zoom:30%;" />
+​                 <img src="graphs/ed1_5-1.png" alt="ed1_5-1" style="zoom:50%;" />              <img src="graphs/ed1_5-2.png" alt="ed1_5-2" style="zoom:50%;" />
+
+右图清晰地解释了两条通电导线磁力的示意图。需要注意 **磁感应强度（Magnetic Field）** 是为了描述矢量 $\mathbf{v}$ 和 $\mathbf{F}$ 而“捏造出来的矢量。事实上，它是一个 **伪矢量（Pseudovector）**，其表现为，将其它设定进行镜像变换后，$\mathbf{B}$ 并不一定是原来的镜像变换，如下图所示：
+
+<img src="graphs/ed1_5-3.png" alt="ed1_5-3" style="zoom:10%;" />
+
+**洛伦兹定律** 声称，速度为 $\mathbf{v}$ 的测试电荷 $Q$ 受到的磁场力和 $Q$、$\mathbf{v}$ 以及磁场强度 $\mathbf{B}$ 成正比，方向和 $\mathbf{v}\times\mathbf{B}$ 相同：
+$$
+\marginbox{\mathbf{F} = Q(\mathbf{v}\times \mathbf{B})}
+$$
+这可以认为是静磁学的一个公理（类似于库仑定律），我们无需证明。如果同时考虑电场 $\mathbf{E}$，上式就变为：
+$$
+\mathbf{F} = Q(\mathbf{E} + \mathbf{v}\times\mathbf{B})
+$$
+我们接下来的任务就是研究如何求得其中的 $\mathbf{E}$ 和 $\mathbf{B}$。
+
+> **例**：下面我们以 **回旋加速器（Cyclotron）** 为例，展示电磁场同时存在的情形。其中的带电粒子会进行螺旋前进的运动，其中向心力由磁场提供。示意图如下：
+>
+> <img src="graphs/ed1_5-4.png" alt="ed1_5-4" style="zoom:50%;" />
+>
+> 假设磁场强度为 $\mathbf{B}$, 带电粒子电荷为 $Q$, 回旋加速器的半径是 $R$，粒子的速度与磁场垂直的分量为 $v$ （注意到平行方向的速度并不会影响磁场力），求粒子的动量。
+
+> **解**：这个本质就是一个向心问题：
+> $$
+> \begin{align*}
+> 	QvB = m\frac{v^2}{R} \implies p = QBR
+> \end{align*}
+> $$
+
+> **例**：**摆线运动（Cycloid Motion）**，考虑两个相互垂直的电场 $\mathbf{E} = E\hat{\mathbf{z}}$ 和磁场 $\mathbf{B} = B\hat{\mathbf{x}}$，以及一个初始静止在原点的正电荷。求它的运动轨迹。
+
+> **解**：该电荷只会受到 $y, z$ 方向的力，可以列出下面的式子：
+> $$
+> \mathbf{v}\times\mathbf{B} = 
+> \begin{vmatrix}
+> 	\hat{\mathbf{x}} & \hat{\mathbf{y}} & \hat{\mathbf{z}} \\
+> 	0 & \dot{x} & \dot{z} \\
+> 	B & 0 & 0
+> \end{vmatrix} 
+> = B\dot{z}\hat{\mathbf{y}} - B\dot{y}\hat{\mathbf{z}}
+> \nonumber
+> $$
+> 将电场的影响考虑上去，则有：
+> $$
+> \begin{align*}
+>     \mathbf{F} &= Q(\mathbf{E} + \mathbf{v} \times \mathbf{B}) = Q((E - B\dot{y})\hat{\mathbf{z}} - B\dot{y}\hat{\mathbf{z}}) \\
+>     &= m\mathbf{a} = m(\ddot{y}\hat{\mathbf{y}} + \ddot{z}\hat{\mathbf{z}})
+> \end{align*}
+> $$
+> 这样就列出了运动方程：
+> $$
+> \begin{align*}
+> 	QB\dot{z} = m\ddot{y} && Q(E - B\dot{y}) = m\ddot{z}
+> \end{align*}
+> $$
+> 设 **摆线频率（Cyclotron Frequency）** 为：
+> $$
+> \omega = \frac{QB}{m}
+> $$
+> 我们就得到了简化的运动方程：
+> $$
+> \begin{align*}
+> 	\ddot{y} = \omega\dot{z} && \ddot{z} = \omega\left(\frac{E}{B} - \dot{y}\right)
+> \end{align*}
+> $$
+> 这个方程的通解是：
+> $$
+> \begin{cases}
+> 	y(t) = C_1\cos{\omega t} + C_2\sin{\omega t} + \dfrac{E}{B}t + C_3 \\
+> 	z(t) = C_2\cos{\omega t} - C_2\sin{\omega t} + C_4
+> \end{cases}
+> $$
+> 根据边界条件 $y(0) = z(0) = 0, \dot{y}(0) = \dot{z}(0) = 0$，我们最终得到：
+> $$
+> \begin{cases}
+> 	y(t) = \dfrac{E}{\omega B}(\omega t - \sin{\omega t}) \\
+> 	z(t) = \dfrac{E}{\omega B}(1 - \cos{\omega t})
+> \end{cases}
+> $$
+> 为了更好理解这个答案，令：
+> $$
+> R = \frac{E}{\omega B}
+> $$
+> 则下面的等式成立：
+> $$
+> (y - R\omega t)^2 + (z - R)^2 = R^2
+> $$
+> 因此它的轨迹是一个以 $(0, R\omega t, R)$ 为圆心，半径为 $R$ 的圆。由于 $y = R\omega t = \dfrac{E}{B}t$ 随时间变化而移动，因此可以理解为这个圆沿着 $\hat{\mathbf{y}}$ 以 $\dfrac{E}{B}$ 的速度移动。示意图如下：
+>
+> <img src="graphs/ed1_5-5.png" alt="ed1_5-4" style="zoom:50%;" />
+
+### 电流
+
+**电流（Current）** 是指单位时间内通过某点的电荷数量，单位是 **安培（Amperes, $\text{A}$）**，满足 $1\ \text{A} = 1\ \text{C}/\text{s}$。需要注意的是，电流的方向和电荷类型有关；负电荷（比如电子）移动方向和电流方向是相反的。对于电荷线密度为 $\lambda$ 的电线，它的电流可以通过下式计算：
+$$
+\mathbf{I} = \lambda\mathbf{v}
+$$
+我们可以由此推出洛伦兹力公式和电流的关系：
+$$
+\begin{align}
+\mathbf{F} &= \int(\mathbf{v}\times\mathbf{B})\,dq = \int(\mathbf{v}\times\mathbf{B})\lambda\,dl = \int(\mathbf{I}\times\mathbf{B})\,dl \nonumber \\
+&= \int I(d\mathbf{l}\times\mathbf{B})
+\end{align}
+$$
+当电流从平面中通过时（如下图所示），我们可以类似地定义 **平面电流密度（Surface Current Density）**，记为 $\mathbf{K}$：
+
+<img src="graphs/ed1_5-6.png" alt="ed1_5-6" style="zoom:40%;" />
+
+计算公式是：
+$$
+\mathbf{K} = \sigma\mathbf{v} = \frac{\mathbf{dI}}{dl_\perp}
+$$
+洛伦兹力为：
+$$
+\mathbf{F} = \int(\mathbf{K}\times\mathbf{B})\,da
+$$
+三维空间中，可以定义 **体积电流密度（Volume Current Density）**，记为 $\mathbf{J}$，图示如下：
+
+<img src="graphs/ed1_5-7.png" alt="ed1_5-7" style="zoom:50%;" />
+
+类似地我们有：
+$$
+\begin{align*}
+	\mathbf{J} &= \rho \mathbf{v} = \frac{d\mathbf{I}}{da_\perp} \\
+	\mathbf{F} &= \int(\mathbf{J}\times\mathbf{B})\,d\tau
+\end{align*}
+$$
+我们可以通过电流密度计算通过截面 $\mathcal{S}$ 的电流：
+$$
+I = \int_\mathcal{S}\mathbf{J}\cdot\,d\mathbf{a}
+$$
+根据散度定理我们有：
+$$
+\int_\mathcal{S}\mathbf{J}\cdot\,d\mathbf{a} = \int_\mathcal{V}(\nabla\cdot\mathbf{J})\,d\tau \nonumber
+$$
+
 
