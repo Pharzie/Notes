@@ -39,20 +39,25 @@ auto arr = [ 1, 2, 3 ];	// arr : [int]
 
 That's it. If you are familiar with **C++**, you can treat it as the auto type deduction (with minor differences we don't care so far). `i` is an identifier bound to an integer object whose value is `10`; `s` is an identifier bound to an array of constant characters who make up of a string `"abc"`; `arr` is an identifier bound to an array of integers whose values are `1`, `2`, and `3`.
 
-Finally, let's get to know the abbreviations of some terms, which will be frequently used in illustration of grammar:
+Finally, let's get to know the abbreviations of some terms, which will be frequently used in illustration of grammar. Note that `@` appears when the following name should be interpreted via some structures, some of which names are listed below:
 
 | **Abbreviation** | **Meaning** | **Abbreviation** | **Meaning** | **Abbreviation** | **Meaning** |
 | ---------------- | ----------- | ---------------- | ----------- | ---------------- | ----------- |
-| `id`             | identifier  | `expr`           | expression  | `stmt`           | statement   |
-| `qual`           | qualifier   | `spec`           | specifier   | `mod`            | modifier    |
-| `attr`           | attribute   | `patt`           | pattern     | `cls`            | clause      |
-| `list`           | list        | `?`              | optional    | `!`              | strict      |
-|                  |             |                  |             |                  |             |
+| `@id`            | identifier  | `@expr`          | expression  | `@stmt`          | statement   |
+| `@qual`          | qualifier   | `@spec`          | specifier   | `@mod`           | modifier    |
+| `@attr`          | attribute   | `@patt`          | pattern     | `@cls`           | clause      |
+| `@list`          | list        | `?`              | optional    | `!`              | strict      |
+| `@ent`           | entity      |                  |             |                  |             |
 
 Some of the terms above needs further specification for syntax, let's view some of the most frequetly used:
 
-- `id`: Identifiers or scope-specified identifiers. e.g. `name`, `ns::ms::ks::name`.
-- `patt`: Patterns are like value expressions, but each element could be a `@cstr-chain` or `@id : @cstr-chain`, which is also known as `@patt-pair`.
+- `@id`: Identifiers or scope-specified identifiers. e.g. `name`, `ns::ms::ks::name`. This could be any valid identifiers.
+- `@type-id`: Identifiers or scope-specified identifiers that have *type semantics*. e.g. `MyType`, `ns::MyType`. Note that identifiers for *templates* are also put into this category.
+- `@class-id`: Identifiers or scope-specified identifiers that have *class semantics*. e.g. `trait`, `ns::trait`.
+- `@list`: All structures containing comma-separated entities are called `@list`.
+- `@arr-list`: Lists that enclosed by a pair of brackets. e.g. `[10, a, c + d]`.
+- `@tup-list`: Lists that enclosed by a pair of parentheses. e.g. `(1, "abc", secret)`.
+- `@patt`: Patterns are like value expressions, but each element could be a `@cstr-chain` or `@id : @cstr-chain`, which is also known as `@patt-pair`.
 
 ## A Crash Course of Aster
 
